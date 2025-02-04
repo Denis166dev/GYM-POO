@@ -4,7 +4,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.*;
-
+//teste
 public class CadastroCliente extends JFrame {
     /* Declaração de labels, campos de texto e outros componentes */
     private JLabel lblNome = new JLabel("Nome:");
