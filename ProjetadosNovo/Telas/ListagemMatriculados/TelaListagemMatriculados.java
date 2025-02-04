@@ -9,6 +9,8 @@ public class TelaListagemMatriculados {
         JFrame frame = new JFrame("Listagem de Matriculados");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 300);
+        frame.setLocationRelativeTo((Component)null);
+        frame.setResizable(false);
 
         // Criar os dados (matrículas e nomes)
         String[][] dados = {
