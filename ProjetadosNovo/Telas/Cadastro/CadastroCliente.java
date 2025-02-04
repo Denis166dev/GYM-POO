@@ -3,6 +3,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class CadastroCliente extends JFrame {
     /* Declaração de labels, campos de texto e outros componentes */
@@ -156,12 +158,11 @@ public class CadastroCliente extends JFrame {
         String idade = txtIdade.getText();
         String plano = (String) comboBox.getSelectedItem();
 
-        String sql = "INSERT INTO alunos (nome, email, genero, peso, altura, idade, plano) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO alunos (nome, email, genero, peso, altura, idade, plano, horario_matricula) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        if (nome.isEmpty() || email.isEmpty() || idade.isEmpty() || peso.isEmpty() || altura.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Preencha todos os campos obrigatórios.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        LocalDateTime horarioAtual = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String horarioFormatado = horarioAtual.format(formatter);
 
         try (Connection connection = ConexaoDB.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -173,8 +174,10 @@ public class CadastroCliente extends JFrame {
             statement.setString(5, altura);
             statement.setString(6, idade);
             statement.setString(7, plano);
+            statement.setString(8, horarioFormatado);
 
             statement.executeUpdate();
+
             JOptionPane.showMessageDialog(this, "Aluno cadastrado com sucesso!");
         } catch (SQLException ex) {
             ex.printStackTrace();
