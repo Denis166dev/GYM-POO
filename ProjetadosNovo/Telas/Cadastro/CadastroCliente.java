@@ -1,9 +1,8 @@
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.*;
 
 public class CadastroCliente extends JFrame {
     /* Declaração de labels, campos de texto e outros componentes */
@@ -29,7 +28,7 @@ public class CadastroCliente extends JFrame {
         /* Configurações iniciais da janela */
         this.setTitle("Cadastro de Cliente");
         this.setSize(800, 400);
-        this.setDefaultCloseOperation(3);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo((Component)null);
         this.setResizable(false);
 
@@ -125,6 +124,13 @@ public class CadastroCliente extends JFrame {
 
         this.add(panel);
         this.setVisible(true);
+
+        btnCadastro.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cadastrar(); // Chama o método cadastrar quando o botão é clicado
+            }
+        });
     }
 
     /* Método utilitário para adicionar componentes ao painel com GridBagLayout */
@@ -141,6 +147,40 @@ public class CadastroCliente extends JFrame {
         }
     }
 
+    private void cadastrar() {
+        String nome = txtNome.getText();
+        String email = txtEmail.getText();
+        String genero = rdFeminino.isSelected() ? "Feminino" : "Masculino";
+        String peso = txtPeso.getText();
+        String altura = txtAltura.getText();
+        String idade = txtIdade.getText();
+        String plano = (String) comboBox.getSelectedItem();
+
+        String sql = "INSERT INTO alunos (nome, email, genero, peso, altura, idade, plano) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        if (nome.isEmpty() || email.isEmpty() || idade.isEmpty() || peso.isEmpty() || altura.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos obrigatórios.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try (Connection connection = ConexaoDB.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, nome);
+            statement.setString(2, email);
+            statement.setString(3, genero);
+            statement.setString(4, peso);
+            statement.setString(5, altura);
+            statement.setString(6, idade);
+            statement.setString(7, plano);
+
+            statement.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Aluno cadastrado com sucesso!");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao cadastrar aluno: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     public static void main(String[] args) {
         /* Cria e exibe a janela de cadastro */
         new CadastroCliente();

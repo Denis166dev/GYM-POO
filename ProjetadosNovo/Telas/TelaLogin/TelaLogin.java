@@ -7,6 +7,7 @@ public class TelaLogin extends JFrame {
     private JCheckBox alunoCheckBox;
     private JCheckBox instrutorCheckBox;
 
+
     public TelaLogin() {
         setTitle("Login");
         setSize(350, 250);
@@ -61,6 +62,12 @@ public class TelaLogin extends JFrame {
 
         if (autenticarUsuario(matricula, senha, tipo)) {
             JOptionPane.showMessageDialog(this, "Login realizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+            MenuAcademia menuAcademia = new MenuAcademia();
+            menuAcademia.setVisible(true);
+
+        } else {
+            JOptionPane.showMessageDialog(this, "Senha ou email invalidos.");
         }
     }
 
