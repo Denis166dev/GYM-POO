@@ -156,7 +156,7 @@ public class CadastroCliente extends JFrame {
         String idade = txtIdade.getText();
         String plano = (String) comboBox.getSelectedItem();
 
-        String sql = "INSERT INTO alunos (nome, email, genero, peso, altura, idade, plano) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO alunos (id, nome, email, genero, peso, altura, idade, plano) VALUES (default, ?, ?, ?, ?, ?, ?, ?)";
 
         if (nome.isEmpty() || email.isEmpty() || idade.isEmpty() || peso.isEmpty() || altura.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Preencha todos os campos obrigatórios.", "Aviso", JOptionPane.WARNING_MESSAGE);
