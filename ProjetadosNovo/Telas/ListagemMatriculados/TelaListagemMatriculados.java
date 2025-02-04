@@ -8,24 +8,24 @@ public class TelaListagemMatriculados {
         // Criar a janela principal (JFrame)
         JFrame frame = new JFrame("Listagem de Matriculados");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 300);
+        frame.setSize(700, 600);
         frame.setLocationRelativeTo((Component)null);
         frame.setResizable(false);
 
-        // Criar os dados (matrículas e nomes)
-        String[][] dados = {
-                {"12345", "João Silva"},
-                {"67890", "Maria Oliveira"},
-                {"11223", "Carlos Santos"},
-                {"44556", "Ana Souza"},
-                {"78901", "Pedro Costa"}
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[][] {
+                        {"01", "Gustavo", "20/01/2021"},
+                        {"01", "Gustavo", "20/01/2021"},
+                        {"01", "Gustavo", "20/01/2021"}
+                },
+                new String[] {"MATRÍCULA", "NOME", "DATA DE MATRICULA"}
+        ) {
+            // Sobrescreve o método isCellEditable para impedir edição das células
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Todas as células não serão editáveis
+            }
         };
-
-        // Criar os nomes das colunas
-        String[] colunas = {"MATRÍCULA", "NOME", "DATA DE MATRICULA"};
-
-        // Criar o modelo da tabela
-        DefaultTableModel model = new DefaultTableModel(dados, colunas);
 
         // Criar a JTable com o modelo
         JTable tabela = new JTable(model);
