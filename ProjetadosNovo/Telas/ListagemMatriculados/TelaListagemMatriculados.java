@@ -14,11 +14,11 @@ public class TelaListagemMatriculados {
 
         // Criar os dados (matrículas e nomes)
         String[][] dados = {
-                {"12345", "João Silva"},
-                {"67890", "Maria Oliveira"},
-                {"11223", "Carlos Santos"},
-                {"44556", "Ana Souza"},
-                {"78901", "Pedro Costa"}
+                {"12345", "João Silva", "01/01/2025"},
+                {"67890", "Maria Oliveira", "01/01/2025"},
+                {"11223", "Carlos Santos", "01/01/2025"},
+                {"44556", "Ana Souza", "01/01/2025"},
+                {"78901", "Pedro Costa", "01/01/2025"}
         };
 
         // Criar os nomes das colunas
