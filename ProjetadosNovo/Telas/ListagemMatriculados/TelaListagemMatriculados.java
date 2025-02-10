@@ -29,7 +29,7 @@ public class TelaListagemMatriculados {
 
         // Criar a JTable com o modelo
         JTable tabela = new JTable(model);
-
+        tabela.getTableHeader().setReorderingAllowed(false);
         // Adicionar a tabela em um JScrollPane para permitir rolagem se necessário
         JScrollPane scrollPane = new JScrollPane(tabela);
         frame.add(scrollPane, BorderLayout.CENTER);
