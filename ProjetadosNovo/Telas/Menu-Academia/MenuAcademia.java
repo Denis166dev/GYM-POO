@@ -21,7 +21,7 @@ public class MenuAcademia extends JFrame {
         ImageIcon imagemOriginal = new ImageIcon("imgs/logoProjetoAcademia.png"); // Substitua pelo caminho da sua imagem
         ImageIcon IconeImagem = new ImageIcon("imgs/logoProjetoAcademiaSEmFUndo.png");
         setIconImage(IconeImagem.getImage()); // Define o ícone da janela
-
+    
         // Redimensionar a imagem
         Image imagemRedimensionada = imagemOriginal.getImage().getScaledInstance(230, 230, Image.SCALE_SMOOTH);
         ImageIcon imagemFinal = new ImageIcon(imagemRedimensionada);
