@@ -26,12 +26,15 @@ public class TelaLoginNETBEANS extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jButton1 = new javax.swing.JButton();
         jPasswordField1 = new javax.swing.JPasswordField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
+        jRadioButton1 = new javax.swing.JRadioButton();
+        jRadioButton2 = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(238, 238, 238));
@@ -78,20 +81,36 @@ public class TelaLoginNETBEANS extends javax.swing.JFrame {
         jTextField2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jTextField2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
 
+        buttonGroup1.add(jRadioButton1);
+        jRadioButton1.setText("Instrutor");
+        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton1ActionPerformed(evt);
+            }
+        });
+
+        buttonGroup1.add(jRadioButton2);
+        jRadioButton2.setText("Aluno");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(99, 99, 99)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jPasswordField1)
-                        .addComponent(jLabel1)
-                        .addComponent(jTextField2)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jRadioButton1)
+                        .addGap(47, 47, 47)
+                        .addComponent(jRadioButton2))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPasswordField1)
+                            .addComponent(jLabel1)
+                            .addComponent(jTextField2)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE))))
                 .addContainerGap(99, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -99,15 +118,19 @@ public class TelaLoginNETBEANS extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(48, 48, 48)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(39, 39, 39)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
-                .addGap(4, 4, 4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jRadioButton1)
+                    .addComponent(jRadioButton2))
+                .addGap(10, 10, 10)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(45, Short.MAX_VALUE))
         );
@@ -129,52 +152,59 @@ public class TelaLoginNETBEANS extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ComponentAdded
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-
-
-        MenuAcademia menuacademiatela = new MenuAcademia();
-        menuacademiatela.setVisible(true);
+        realizarLogin();
+//        MenuAcademia menuacademiatela = new MenuAcademia();
+//        menuacademiatela.setVisible(true);
     }//GEN-LAST:event_jButton1MouseClicked
 
-//    public void realizarLogin() {
-//
-//        String matricula = jTextField2.getText();
-//        String senha = new String(jPasswordField1.getPassword());
-//        String tipo = alunoCheckBox.isSelected() ? "Aluno" : instrutorCheckBox.isSelected() ? "Instrutor" : "Nenhum";
-//
-//        if (autenticarUsuario(matricula, senha, tipo)) {
-//            JOptionPane.showMessageDialog(this, "Login realizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-//
-//            MenuAcademia menuAcademia = new MenuAcademia();
-//            menuAcademia.setVisible(true);
-//
-//        } else {
-//            JOptionPane.showMessageDialog(this, "Senha ou email invalidos.");
-//        }
-//    }
-//
-//    private boolean autenticarUsuario(String matricula, String senha, String tipo) {
-//        String sql = "SELECT * FROM Usuarios WHERE matricula = ? AND senha = ? AND tipo = ?";
-//
-//        try (Connection conn = ConexaoDB.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//            pstmt.setString(1, matricula);
-//            pstmt.setString(2, senha);
-//            pstmt.setString(3, tipo);
-//            ResultSet rs = pstmt.executeQuery();
-//            return rs.next();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return false;
-//    }
+    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton1ActionPerformed
+
+    public void realizarLogin() {
+
+        String matricula = jTextField2.getText();
+        String senha = new String(jPasswordField1.getPassword());
+        String tipo = jRadioButton2.isSelected() ? "aluno" : jRadioButton1.isSelected() ? "instrutor" : null;
+
+        if (tipo == null) {
+            JOptionPane.showMessageDialog(this, "Selecione o tipo de usuário (Aluno ou Instrutor).", "Erro", JOptionPane.ERROR_MESSAGE);
+            return; // Don't proceed with login
+        }
+
+        if (autenticarUsuario(matricula, senha, tipo)) {
+            JOptionPane.showMessageDialog(this, "Login realizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+            // Close the login window
+            this.setVisible(false); // Or dispose(): this.dispose();
+
+            // Open the main menu window
+            MenuAcademia menuAcademia = new MenuAcademia();
+            menuAcademia.setVisible(true);
+
+        } else {
+            JOptionPane.showMessageDialog(this, "Matrícula, senha ou tipo de usuário inválidos.", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private boolean autenticarUsuario(String matricula, String senha, String tipo) {
+        String sql = "SELECT * FROM Usuarios WHERE matricula = ? AND senha = ? AND tipo = ?";
+
+        try (Connection conn = ConexaoDB.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, matricula);
+            pstmt.setString(2, senha);
+            pstmt.setString(3, tipo);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -202,11 +232,14 @@ public class TelaLoginNETBEANS extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JRadioButton jRadioButton1;
+    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
 }

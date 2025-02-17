@@ -20,8 +20,8 @@ public class CadastroCliente extends JFrame {
     private JTextField txtPeso = new JTextField(5);
     private JLabel lblAltura = new JLabel("Altura:");
     private JTextField txtAltura = new JTextField(5);
-    private JLabel lblIdade = new JLabel("Idade:");
-    private JTextField txtIdade = new JTextField(5);
+    private JLabel lblNascimento = new JLabel("Nascimento:");
+    private JTextField txtNascimento = new JTextField(5);
     private JLabel lblLista = new JLabel("Plano:");
     private JButton btnCadastro = new JButton("Cadastrar");
     private JComboBox<String> comboBox = new JComboBox<>(new String[] {"Mensal","Semestral","Anual"});
@@ -44,13 +44,13 @@ public class CadastroCliente extends JFrame {
         lblGenero.setFont(labelFont);
         lblPeso.setFont(labelFont);
         lblAltura.setFont(labelFont);
-        lblIdade.setFont(labelFont);
+        lblNascimento.setFont(labelFont);
         lblLista.setFont(labelFont);
         txtNome.setFont(fieldFont);
         txtEmail.setFont(fieldFont);
         txtPeso.setFont(fieldFont);
         txtAltura.setFont(fieldFont);
-        txtIdade.setFont(fieldFont);
+        txtNascimento.setFont(fieldFont);
         rdFeminino.setFont(fieldFont);
         rdMasculino.setFont(fieldFont);
         comboBox.setFont(fieldFont);
@@ -90,7 +90,7 @@ public class CadastroCliente extends JFrame {
 
         constraints.gridx = 2;
         constraints.gridwidth = 1;
-        this.addComponent(panel, constraints, this.lblIdade, this.txtIdade, 2, 0);
+        this.addComponent(panel, constraints, this.lblNascimento, this.txtNascimento, 2, 0);
 
         /* Painel para os botões de rádio do gênero */
         JPanel panelGenero = new JPanel(new GridBagLayout());
@@ -152,13 +152,13 @@ public class CadastroCliente extends JFrame {
     private void cadastrar() {
         String nome = txtNome.getText();
         String email = txtEmail.getText();
-        String genero = rdFeminino.isSelected() ? "Feminino" : "Masculino";
+        String sexo = rdFeminino.isSelected() ? "Feminino" : "Masculino";
         String peso = txtPeso.getText();
         String altura = txtAltura.getText();
-        String idade = txtIdade.getText();
+        String nascimento = txtNascimento.getText();
         String plano = (String) comboBox.getSelectedItem();
 
-        String sql = "INSERT INTO alunos (nome, email, genero, peso, altura, idade, plano, horario_matricula) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO alunos (nome, email, sexo, peso, altura, nascimento, plano, horario_cadastro) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         LocalDateTime horarioAtual = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -169,10 +169,10 @@ public class CadastroCliente extends JFrame {
 
             statement.setString(1, nome);
             statement.setString(2, email);
-            statement.setString(3, genero);
+            statement.setString(3, sexo);
             statement.setString(4, peso);
             statement.setString(5, altura);
-            statement.setString(6, idade);
+            statement.setString(6, nascimento);
             statement.setString(7, plano);
             statement.setString(8, horarioFormatado);
 
