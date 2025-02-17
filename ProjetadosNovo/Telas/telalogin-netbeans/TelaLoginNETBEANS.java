@@ -1,9 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
+import javax.swing.*;
 import java.awt.*;
+import java.sql.*;
 
 /**
  *
@@ -132,10 +129,43 @@ public class TelaLoginNETBEANS extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ComponentAdded
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+
+
         MenuAcademia menuacademiatela = new MenuAcademia();
         menuacademiatela.setVisible(true);
     }//GEN-LAST:event_jButton1MouseClicked
 
+//    public void realizarLogin() {
+//
+//        String matricula = jTextField2.getText();
+//        String senha = new String(jPasswordField1.getPassword());
+//        String tipo = alunoCheckBox.isSelected() ? "Aluno" : instrutorCheckBox.isSelected() ? "Instrutor" : "Nenhum";
+//
+//        if (autenticarUsuario(matricula, senha, tipo)) {
+//            JOptionPane.showMessageDialog(this, "Login realizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+//
+//            MenuAcademia menuAcademia = new MenuAcademia();
+//            menuAcademia.setVisible(true);
+//
+//        } else {
+//            JOptionPane.showMessageDialog(this, "Senha ou email invalidos.");
+//        }
+//    }
+//
+//    private boolean autenticarUsuario(String matricula, String senha, String tipo) {
+//        String sql = "SELECT * FROM Usuarios WHERE matricula = ? AND senha = ? AND tipo = ?";
+//
+//        try (Connection conn = ConexaoDB.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//            pstmt.setString(1, matricula);
+//            pstmt.setString(2, senha);
+//            pstmt.setString(3, tipo);
+//            ResultSet rs = pstmt.executeQuery();
+//            return rs.next();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
     /**
      * @param args the command line arguments
      */
