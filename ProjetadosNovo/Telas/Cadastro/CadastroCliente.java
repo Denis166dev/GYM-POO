@@ -20,8 +20,8 @@ public class CadastroCliente extends JFrame {
     private JTextField txtPeso = new JTextField(5);
     private JLabel lblAltura = new JLabel("Altura:");
     private JTextField txtAltura = new JTextField(5);
-    private JLabel lblIdade = new JLabel("Idade:");
-    private JTextField txtIdade = new JTextField(5);
+    private JLabel lblNascimento = new JLabel("Nascimento:");
+    private JTextField txtNascimento = new JTextField(5);
     private JLabel lblLista = new JLabel("Plano:");
     private JButton btnCadastro = new JButton("Cadastrar");
     private JComboBox<String> comboBox = new JComboBox<>(new String[] {"Mensal","Semestral","Anual"});
@@ -44,13 +44,13 @@ public class CadastroCliente extends JFrame {
         lblGenero.setFont(labelFont);
         lblPeso.setFont(labelFont);
         lblAltura.setFont(labelFont);
-        lblIdade.setFont(labelFont);
+        lblNascimento.setFont(labelFont);
         lblLista.setFont(labelFont);
         txtNome.setFont(fieldFont);
         txtEmail.setFont(fieldFont);
         txtPeso.setFont(fieldFont);
         txtAltura.setFont(fieldFont);
-        txtIdade.setFont(fieldFont);
+        txtNascimento.setFont(fieldFont);
         rdFeminino.setFont(fieldFont);
         rdMasculino.setFont(fieldFont);
         comboBox.setFont(fieldFont);
@@ -90,7 +90,7 @@ public class CadastroCliente extends JFrame {
 
         constraints.gridx = 2;
         constraints.gridwidth = 1;
-        this.addComponent(panel, constraints, this.lblIdade, this.txtIdade, 2, 0);
+        this.addComponent(panel, constraints, this.lblNascimento, this.txtNascimento, 2, 0);
 
         /* Painel para os botões de rádio do gênero */
         JPanel panelGenero = new JPanel(new GridBagLayout());
@@ -130,7 +130,11 @@ public class CadastroCliente extends JFrame {
         btnCadastro.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cadastrar(); // Chama o método cadastrar quando o botão é clicado
+                try {
+                    cadastrar(); // Chama o método cadastrar quando o botão é clicado
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
     }
@@ -149,41 +153,100 @@ public class CadastroCliente extends JFrame {
         }
     }
 
-    private void cadastrar() {
+    private void cadastrar() throws SQLException {
         String nome = txtNome.getText();
         String email = txtEmail.getText();
-        String genero = rdFeminino.isSelected() ? "Feminino" : "Masculino";
+        String sexo = rdFeminino.isSelected() ? "Feminino" : "Masculino";
         String peso = txtPeso.getText();
         String altura = txtAltura.getText();
-        String idade = txtIdade.getText();
+        String nascimento = txtNascimento.getText();
         String plano = (String) comboBox.getSelectedItem();
-
-        String sql = "INSERT INTO alunos (nome, email, genero, peso, altura, idade, plano, horario_matricula) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         LocalDateTime horarioAtual = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String horarioFormatado = horarioAtual.format(formatter);
 
-        try (Connection connection = ConexaoDB.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        Connection connection = ConexaoDB.getConnection();
+        try (connection) {
 
-            statement.setString(1, nome);
-            statement.setString(2, email);
-            statement.setString(3, genero);
-            statement.setString(4, peso);
-            statement.setString(5, altura);
-            statement.setString(6, idade);
-            statement.setString(7, plano);
-            statement.setString(8, horarioFormatado);
+            Usuario usuario = new Usuario("senha_padrao", "aluno"); // Hash da senha aqui!!!
+            Aluno aluno = new Aluno(nome, email, nascimento, sexo, Double.parseDouble(peso), Double.parseDouble(altura), plano, horarioFormatado);
 
-            statement.executeUpdate();
+            // 3. Inserir no banco de dados
+            connection.setAutoCommit(false); // Iniciar transação
 
+            try (PreparedStatement pstmt_usuarios = connection.prepareStatement("INSERT INTO usuarios (matricula, senha, tipo) VALUES (?, ?, ?)")) {
+                pstmt_usuarios.setInt(1, usuario.getMatricula());
+                pstmt_usuarios.setString(2, usuario.getSenha()); // Senha hasheada
+                pstmt_usuarios.setString(3, usuario.getTipo());
+                pstmt_usuarios.executeUpdate();
+            }
+
+            try (PreparedStatement pstmt_alunos = connection.prepareStatement("INSERT INTO alunos (matricula, nome, email, sexo, peso, altura, nascimento, plano, horario_cadastro) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                pstmt_alunos.setInt(1, aluno.getMatricula());
+                pstmt_alunos.setString(2, aluno.getNome());
+                pstmt_alunos.setString(3, aluno.getEmail());
+                pstmt_alunos.setString(4, aluno.getSexo());
+                pstmt_alunos.setDouble(5, aluno.getPeso());
+                pstmt_alunos.setDouble(6, aluno.getAltura());
+                pstmt_alunos.setString(7, aluno.getNascimento());
+                pstmt_alunos.setString(8, aluno.getPlano());
+                pstmt_alunos.setString(9, aluno.getHorarioCadastro());
+                pstmt_alunos.executeUpdate();
+            }
+
+            connection.commit(); // Finalizar transação
             JOptionPane.showMessageDialog(this, "Aluno cadastrado com sucesso!");
+
         } catch (SQLException ex) {
+            try { connection.rollback(); } catch (SQLException rollbackException) { rollbackException.printStackTrace(); } // Em caso de erro, rollback
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Erro ao cadastrar aluno: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+
+    private int gerarMatricula(Connection connection) throws SQLException {
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT MAX(matricula) FROM usuarios")) {
+
+            if (resultSet.next()) {
+                return resultSet.getInt(1) + 1;
+            } else {
+                return 1; // Primeira matrícula
+            }
+        }
+    }
+
+
+
+
+//        String sql = "INSERT INTO alunos (nome, email, sexo, peso, altura, nascimento, plano, horario_cadastro) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+//
+//        LocalDateTime horarioAtual = LocalDateTime.now();
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//        String horarioFormatado = horarioAtual.format(formatter);
+//
+//        try (Connection connection = ConexaoDB.getConnection();
+//             PreparedStatement statement = connection.prepareStatement(sql)) {
+//
+//            statement.setString(1, nome);
+//            statement.setString(2, email);
+//            statement.setString(3, sexo);
+//            statement.setString(4, peso);
+//            statement.setString(5, altura);
+//            statement.setString(6, nascimento);
+//            statement.setString(7, plano);
+//            statement.setString(8, horarioFormatado);
+//
+//            statement.executeUpdate();
+//
+//            JOptionPane.showMessageDialog(this, "Aluno cadastrado com sucesso!");
+//        } catch (SQLException ex) {
+//            ex.printStackTrace();
+//            JOptionPane.showMessageDialog(this, "Erro ao cadastrar aluno: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+//        }
+//    }
     public static void main(String[] args) {
         /* Cria e exibe a janela de cadastro */
         new CadastroCliente();
