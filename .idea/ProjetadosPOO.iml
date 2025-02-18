@@ -8,6 +8,8 @@
       <sourceFolder url="file://$MODULE_DIR$/ProjetadosNovo/Telas/Menu-Academia" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ProjetadosNovo/Telas/TelaLogin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ProjetadosNovo/Telas/telalogin-netbeans" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ProjetadosNovo/Telas/Aluno" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ProjetadosNovo/Telas/Treinos" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
