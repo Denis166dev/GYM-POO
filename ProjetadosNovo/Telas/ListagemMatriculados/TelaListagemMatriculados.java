@@ -66,7 +66,7 @@ class TelaGerenciarTreinos extends JFrame {
         setSize(600, 400);
         setLocationRelativeTo(null);
 
-        model = new DefaultTableModel(new Object[][]{}, new String[]{"ID", "Data Início", "Data Fim", "Tipo", "Ações", "Exercícios"});
+        model = new DefaultTableModel(new Object[][]{}, new String[]{"Treino", "Exercícios", "Ações"});
         JTable tabelaTreinos = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(tabelaTreinos);
         add(scrollPane, BorderLayout.CENTER);
@@ -77,19 +77,26 @@ class TelaGerenciarTreinos extends JFrame {
 
         carregarTreinos();
 
+        tabelaTreinos.getSelectionModel().addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting() && tabelaTreinos.getSelectedRow() != -1) {
+                String treino = (String) model.getValueAt(tabelaTreinos.getSelectedRow(), 0);
+                new TelaExerciciosTreino(matriculaAluno, treino);
+            }
+        });
+
         setVisible(true);
     }
 
     private void carregarTreinos() {
         model.setRowCount(0);
-        String sql = "SELECT * FROM treinos WHERE matricula_aluno = ?";
+        String sql = "SELECT DISTINCT tipo_treino FROM treinos WHERE matricula_aluno = ?";
 
         try (Connection conn = ConexaoDB.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, matriculaAluno);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    model.addRow(new Object[]{rs.getInt("id"), rs.getString("data_inicio"), rs.getString("data_fim"), rs.getString("tipo_treino"), "Editar", "Exercícios"});
+                    model.addRow(new Object[]{rs.getString("tipo_treino"), "Ver Exercícios", "Adicionar Exercício"});
                 }
             }
         } catch (SQLException e) {
@@ -98,9 +105,9 @@ class TelaGerenciarTreinos extends JFrame {
     }
 
     private void adicionarTreino() {
-        String tipoTreino = JOptionPane.showInputDialog(this, "Digite o tipo de treino:");
+        String tipoTreino = JOptionPane.showInputDialog(this, "Digite a divisão do treino (Ex: Treino A, Treino B):");
         if (tipoTreino != null && !tipoTreino.isEmpty()) {
-            String sql = "INSERT INTO treinos (matricula_aluno, data_inicio, data_fim, tipo_treino) VALUES (?, date('now'), date('now', '+30 days'), ?)";
+            String sql = "INSERT INTO treinos (matricula_aluno, tipo_treino) VALUES (?, ?)";
             try (Connection conn = ConexaoDB.getConnection();
                  PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, matriculaAluno);
@@ -112,6 +119,37 @@ class TelaGerenciarTreinos extends JFrame {
             }
         }
     }
+}
+
+class TelaExerciciosTreino extends JFrame {
+    private int matriculaAluno;
+    private String treino;
+
+    public TelaExerciciosTreino(int matriculaAluno, String treino) {
+        this.matriculaAluno = matriculaAluno;
+        this.treino = treino;
+        setTitle("Exercícios - " + treino);
+        setSize(600, 400);
+        setLocationRelativeTo(null);
+
+        DefaultTableModel model = new DefaultTableModel(new Object[][]{}, new String[]{"Exercício", "Descrição", "GIF"});
+        JTable tabelaExercicios = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(tabelaExercicios);
+        add(scrollPane, BorderLayout.CENTER);
+
+        carregarExercicios(model);
+
+        setVisible(true);
+    }
+
+    private void carregarExercicios(DefaultTableModel model) {
+        model.setRowCount(0);
+        JSONArray exercicios = buscarExercicios(treino);
+        for (int i = 0; i < exercicios.length(); i++) {
+            JSONObject exercicio = exercicios.getJSONObject(i);
+            model.addRow(new Object[]{exercicio.getString("name"), exercicio.getString("instructions"), exercicio.getString("gifUrl")});
+        }
+    }
 
     private JSONArray buscarExercicios(String tipoTreino) {
         try {
@@ -119,7 +157,7 @@ class TelaGerenciarTreinos extends JFrame {
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-            conn.setRequestProperty("X-RapidAPI-Key", "SUA_CHAVE_API");
+            conn.setRequestProperty("X-RapidAPI-Key", "9da07424admshc09c7cd6f38ce47p15e9d1jsn0b682d7283c8");
             conn.setRequestProperty("X-RapidAPI-Host", "exercisedb.p.rapidapi.com");
 
             Scanner scanner = new Scanner(conn.getInputStream());
