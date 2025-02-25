@@ -46,8 +46,7 @@ public class CadastroCliente extends JFrame {
         lblAltura.setFont(labelFont);
         lblNascimento.setFont(labelFont);
         lblLista.setFont(labelFont);
-        txtNome.setFont(fieldFont);
-        txtEmail.setFont(fieldFont);
+        txtNome.setFont(fieldFont);        txtEmail.setFont(fieldFont);
         txtPeso.setFont(fieldFont);
         txtAltura.setFont(fieldFont);
         txtNascimento.setFont(fieldFont);

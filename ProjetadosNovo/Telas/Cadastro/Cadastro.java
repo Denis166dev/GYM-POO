@@ -6,6 +6,7 @@
  *
  * @author Aluno
  */
+
 public class Cadastro {
     public static void main(String[] args) {
         CadastroClienteNETBEANS cadastro = new CadastroClienteNETBEANS();
