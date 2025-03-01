@@ -10,6 +10,12 @@ public class TelaLoginNETBEANS extends javax.swing.JFrame {
     /**
      * Creates new form TelaLoginNETBEANS
      */
+    public static void main(String[] args) {
+        TelaLoginNETBEANS tela = new TelaLoginNETBEANS();
+        tela.setVisible(true);
+    }
+
+
     public TelaLoginNETBEANS() {
         initComponents();
         
@@ -242,8 +248,14 @@ public class TelaLoginNETBEANS extends javax.swing.JFrame {
             this.setVisible(false); // Or dispose(): this.dispose();
 
             // Open the main menu window
-            MenuAcademia menuAcademia = new MenuAcademia();
-            menuAcademia.setVisible(true);
+            if (tipo.equals("instrutor")) {
+                MenuAcademia menuAcademia = new MenuAcademia();
+                menuAcademia.setVisible(true);
+            } else {
+                TelaPrincipalAlunoNet telaALuno = new TelaPrincipalAlunoNet();
+                telaALuno.setVisible(true);
+            }
+
 
         } else {
             JOptionPane.showMessageDialog(this, "Matrícula, senha ou tipo de usuário inválidos.", "Erro", JOptionPane.ERROR_MESSAGE);
