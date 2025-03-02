@@ -41,7 +41,7 @@ public class PainelBotoes extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Lógica para abrir a tela secundária
-                CadastroCliente teladecadastro = new CadastroCliente();
+                CadastroClienteNETBEANS teladecadastro = new CadastroClienteNETBEANS();
                 teladecadastro.setVisible(true);
             }
         });

@@ -66,7 +66,7 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
             // Cria a tabela, se não existir
 
             // Inserção dos dados (PreparedStatement para segurança)
-            String insertSQL = "INSERT INTO alunos (nome, email, telefone, data_nascimento, sexo) VALUES (?, ?, ?, ?, ?)";
+            String insertSQL = "INSERT INTO alunos (nome, email, numerocel, nascimento, sexo, plano) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
                 pstmt.setString(1, nome);
                 pstmt.setString(2, email);

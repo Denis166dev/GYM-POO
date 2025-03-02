@@ -499,7 +499,7 @@
     <routine id="190" parent="1" name="fts3_tokenizer"/>
     <schema id="191" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-02-17.18:29:03</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-03-01.18:45:07</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="192" parent="16">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1591,111 +1591,166 @@
       <Position>2</Position>
     </argument>
     <table id="555" parent="191" name="alunos"/>
-    <table id="556" parent="191" name="sqlite_master">
+    <table id="556" parent="191" name="exercicios"/>
+    <table id="557" parent="191" name="sqlite_master">
       <System>1</System>
     </table>
-    <table id="557" parent="191" name="sqlite_sequence">
+    <table id="558" parent="191" name="sqlite_sequence">
       <System>1</System>
     </table>
-    <table id="558" parent="191" name="usuarios"/>
-    <column id="559" parent="555" name="nome">
+    <table id="559" parent="191" name="usuarios"/>
+    <column id="560" parent="555" name="nome">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="560" parent="555" name="email">
+    <column id="561" parent="555" name="email">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="561" parent="555" name="nascimento">
+    <column id="562" parent="555" name="nascimento">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="562" parent="555" name="sexo">
+    <column id="563" parent="555" name="sexo">
       <Position>4</Position>
       <StoredType>integer|0s</StoredType>
     </column>
-    <column id="563" parent="555" name="peso">
+    <column id="564" parent="555" name="peso">
       <Position>5</Position>
       <StoredType>REAL|0s</StoredType>
     </column>
-    <column id="564" parent="555" name="altura">
+    <column id="565" parent="555" name="altura">
       <Position>6</Position>
       <StoredType>REAL|0s</StoredType>
     </column>
-    <column id="565" parent="555" name="matricula">
+    <column id="566" parent="555" name="matricula">
       <AutoIncrement>1</AutoIncrement>
       <Position>7</Position>
       <StoredType>integer|0s</StoredType>
     </column>
-    <column id="566" parent="555" name="id_aluno">
+    <column id="567" parent="555" name="id_aluno">
       <Position>8</Position>
       <StoredType>integer|0s</StoredType>
     </column>
-    <column id="567" parent="555" name="plano">
+    <column id="568" parent="555" name="plano">
       <NotNull>1</NotNull>
       <Position>9</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="568" parent="555" name="horario_cadastro">
+    <column id="569" parent="555" name="horario_cadastro">
       <Position>10</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <foreign-key id="569" parent="555" name="id_aluno">
+    <column id="570" parent="555" name="numerocel">
+      <Position>11</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <foreign-key id="571" parent="555" name="id_aluno">
       <ColNames>id_aluno</ColNames>
       <RefColNames>matricula</RefColNames>
       <RefTableName>usuarios</RefTableName>
     </foreign-key>
-    <key id="570" parent="555" name="matricula">
+    <key id="572" parent="555" name="matricula">
       <ColNames>matricula</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="571" parent="556" name="type">
+    <column id="573" parent="556" name="id">
       <Position>1</Position>
-      <StoredType>TEXT|0s</StoredType>
+      <StoredType>INT AUTO_INCREMENT|0s</StoredType>
     </column>
-    <column id="572" parent="556" name="name">
+    <column id="574" parent="556" name="matricula_aluno">
+      <NotNull>1</NotNull>
       <Position>2</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="573" parent="556" name="tbl_name">
-      <Position>3</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="574" parent="556" name="rootpage">
-      <Position>4</Position>
       <StoredType>INT|0s</StoredType>
     </column>
-    <column id="575" parent="556" name="sql">
+    <column id="575" parent="556" name="tipo_treino">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StoredType>VARCHAR(255)|0s</StoredType>
+    </column>
+    <column id="576" parent="556" name="nome">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StoredType>VARCHAR(255)|0s</StoredType>
+    </column>
+    <column id="577" parent="556" name="descricao">
       <Position>5</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="576" parent="557" name="name">
+    <column id="578" parent="556" name="series">
+      <Position>6</Position>
+      <StoredType>INT|0s</StoredType>
+    </column>
+    <column id="579" parent="556" name="repeticoes">
+      <Position>7</Position>
+      <StoredType>INT|0s</StoredType>
+    </column>
+    <column id="580" parent="556" name="peso">
+      <Position>8</Position>
+      <StoredType>REAL|0s</StoredType>
+    </column>
+    <foreign-key id="581" parent="556">
+      <ColNames>matricula_aluno</ColNames>
+      <RefColNames>matricula</RefColNames>
+      <RefTableName>alunos</RefTableName>
+    </foreign-key>
+    <index id="582" parent="556" name="sqlite_autoindex_exercicios_1">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <Unique>1</Unique>
+    </index>
+    <key id="583" parent="556">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>sqlite_autoindex_exercicios_1</UnderlyingIndexName>
+    </key>
+    <column id="584" parent="557" name="type">
+      <Position>1</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="585" parent="557" name="name">
+      <Position>2</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="586" parent="557" name="tbl_name">
+      <Position>3</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="587" parent="557" name="rootpage">
+      <Position>4</Position>
+      <StoredType>INT|0s</StoredType>
+    </column>
+    <column id="588" parent="557" name="sql">
+      <Position>5</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="589" parent="558" name="name">
       <Position>1</Position>
     </column>
-    <column id="577" parent="557" name="seq">
+    <column id="590" parent="558" name="seq">
       <Position>2</Position>
     </column>
-    <check id="578" parent="558">
+    <check id="591" parent="559">
       <Predicate>tipo IN (&apos;aluno&apos;, &apos;instrutor&apos;)</Predicate>
     </check>
-    <column id="579" parent="558" name="matricula">
+    <column id="592" parent="559" name="matricula">
       <AutoIncrement>1</AutoIncrement>
       <Position>1</Position>
       <StoredType>integer|0s</StoredType>
     </column>
-    <column id="580" parent="558" name="senha">
+    <column id="593" parent="559" name="senha">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="581" parent="558" name="tipo">
+    <column id="594" parent="559" name="tipo">
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <key id="582" parent="558">
+    <key id="595" parent="559">
       <ColNames>matricula</ColNames>
       <Primary>1</Primary>
     </key>
