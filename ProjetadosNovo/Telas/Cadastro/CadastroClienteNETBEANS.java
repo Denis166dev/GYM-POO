@@ -18,6 +18,7 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
 
     MaskFormatter mfdata;
     private XMLStreamReader jfData; // Possivelmente não é necessário, revise o uso
+    private JComboBox<String> planoComboBox; // Novo ComboBox para o plano
 
     public CadastroClienteNETBEANS() {
         try {
@@ -45,9 +46,10 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
         String telefone = TelefoneTxtField.getText();
         String dataNascStr = dataNascimento.getText();
         String sexo = MasculinojRadioButton.isSelected() ? "Masculino" : (FemininojRadioButton.isSelected() ? "Feminino" : null);
+        String plano = (String) planoComboBox.getSelectedItem(); // Obtém o plano selecionado
 
         // Validação básica (pode ser aprimorada)
-        if (nome.isEmpty() || email.isEmpty() || telefone.isEmpty() || dataNascStr.isEmpty() || sexo == null) {
+        if (nome.isEmpty() || email.isEmpty() || telefone.isEmpty() || dataNascStr.isEmpty() || sexo == null || plano == null) {
             JOptionPane.showMessageDialog(this, "Preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -66,13 +68,14 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
             // Cria a tabela, se não existir
 
             // Inserção dos dados (PreparedStatement para segurança)
-            String insertSQL = "INSERT INTO alunos (nome, email, numerocel, nascimento, sexo, plano) VALUES (?, ?, ?, ?, ?)";
+            String insertSQL = "INSERT INTO alunos (nome, email, numerocel, nascimento, sexo, plano) VALUES (?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
                 pstmt.setString(1, nome);
                 pstmt.setString(2, email);
                 pstmt.setString(3, telefone);
                 pstmt.setString(4, sdf.format(dataNasc)); // Formata a data para consistência
                 pstmt.setString(5, sexo);
+                pstmt.setString(6, plano); // Salva o plano
                 pstmt.executeUpdate();
 
                 JOptionPane.showMessageDialog(this, "Cliente cadastrado com sucesso!");
@@ -96,6 +99,7 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
         TelefoneTxtField.setText("");
         dataNascimento.setText("");
         buttonGroup1.clearSelection(); // Desmarca os radio buttons
+        planoComboBox.setSelectedIndex(0); // Reseta a seleção do ComboBox
     }
 
     // ... restante do código ... (initComponents, etc.)
@@ -166,6 +170,9 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
         jButton1 = new JButton();
         nomelabel = new JLabel();
         emaillabel = new JLabel();
+        JLabel planoLabel = new JLabel("Plano:"); // Label para o combobox
+        planoComboBox = new JComboBox<>(new String[]{"Mensal", "Trimestral", "Semestral", "Anual"}); // Inicializa o ComboBox
+
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setBackground(new Color(0, 0, 0));
@@ -212,6 +219,8 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
 
         emaillabel.setText("Email:");
 
+
+
         GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -234,7 +243,12 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
                                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                                         .addComponent(telefonelabel)
                                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(TelefoneTxtField, GroupLayout.PREFERRED_SIZE, 257, GroupLayout.PREFERRED_SIZE)))
+                                                        .addComponent(TelefoneTxtField, GroupLayout.PREFERRED_SIZE, 257, GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                                        .addComponent(planoLabel)
+                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(planoComboBox, GroupLayout.PREFERRED_SIZE, 257, GroupLayout.PREFERRED_SIZE))
+                                        )
                                         .addGroup(jPanel1Layout.createSequentialGroup()
                                                 .addComponent(datadeNascimentoLabel)
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
@@ -260,6 +274,11 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                         .addComponent(TelefoneTxtField, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
                                         .addComponent(telefonelabel))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(planoLabel)
+                                        .addComponent(planoComboBox, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE))
+
                                 .addGap(18, 18, 18)
                                 .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                         .addComponent(datadeNascimentoLabel)
