@@ -1,6 +1,7 @@
 public class Aluno {
     private int matricula; // Chave estrangeira que referencia a tabela usuarios
     private String nome;
+    private String numerocel;
     private String email;
     private String nascimento;
     private String sexo; // "Feminino" ou "Masculino"
@@ -12,8 +13,9 @@ public class Aluno {
     public Aluno() {
     } // Construtor vazio
 
-    public Aluno(String nome, String email, String nascimento, String sexo, double peso, double altura, String plano, String horarioCadastro) {
+    public Aluno(String nome, String numerocel, String email, String nascimento, String sexo, double peso, double altura, String plano, String horarioCadastro) {
         this.nome = nome;
+        this.numerocel = numerocel;
         this.email = email;
         this.nascimento = nascimento;
         this.sexo = sexo;
@@ -94,5 +96,13 @@ public class Aluno {
 
     public void setHorarioCadastro(String horarioCadastro) {
         this.horarioCadastro = horarioCadastro;
+    }
+
+    public String getNumerocel() {
+        return numerocel;
+    }
+
+    public void setNumerocel(String numerocel) {
+        this.numerocel = numerocel;
     }
 }
