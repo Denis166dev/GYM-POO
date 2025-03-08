@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,14 +87,24 @@ public class AlunoDAO {
                     aluno.setEmail(rs.getString("email"));
                     aluno.setNumerocel(rs.getString("numerocel"));
 
+                    // --- CORREÇÃO DA DATA ---
                     String dataNascStr = rs.getString("nascimento");
                     if (dataNascStr != null && !dataNascStr.isEmpty()) {
-                        aluno.setNascimento(LocalDate.parse(String.valueOf(LocalDate.parse(dataNascStr, DateTimeFormatter.ISO_LOCAL_DATE))));
+                        try {
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // Formato correto
+                            aluno.setNascimento(LocalDate.parse(dataNascStr, formatter));
+                        } catch (DateTimeParseException e) {
+                            System.err.println("Erro ao converter data de nascimento: " + dataNascStr);
+                            e.printStackTrace();
+                            // Lidar com o erro (ex: definir uma data padrão)
+                        }
                     }
+                    // --- FIM DA CORREÇÃO ---
+
                     String horarioCadastroStr = rs.getString("horario_cadastro");
                     if(horarioCadastroStr != null && !horarioCadastroStr.isEmpty()){
                         try{
-                            aluno.setHorarioCadastro(LocalDateTime.parse(String.valueOf(LocalDateTime.parse(horarioCadastroStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))));
+                            aluno.setHorarioCadastro(LocalDateTime.parse(horarioCadastroStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                         } catch (Exception e){
                             System.err.println("Erro ao converter data de nascimento: " + dataNascStr);
                             e.printStackTrace();
@@ -111,8 +122,7 @@ public class AlunoDAO {
 
     public List<Exercicio> buscarExerciciosPorMatricula(int matricula) throws SQLException {
         List<Exercicio> exercicios = new ArrayList<>();
-        String sql = "SELECT nome, carga, repeticoes, series FROM exercicios WHERE matricula_aluno = ?";
-
+        String sql = "SELECT nome, Carga, repeticoes, series FROM exercicios WHERE matricula_aluno = ?";
         try (Connection conn = ConexaoDB.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -122,7 +132,7 @@ public class AlunoDAO {
                 while (rs.next()) {
                     Exercicio exercicio = new Exercicio();
                     exercicio.setNome(rs.getString("nome"));
-                    exercicio.setCarga(rs.getInt("carga"));
+                    exercicio.setCarga(rs.getInt("carga"));       // <-- E AQUI
                     exercicio.setRepeticoes(rs.getInt("repeticoes"));
                     exercicio.setSeries(rs.getInt("series"));
                     exercicios.add(exercicio);
@@ -131,6 +141,4 @@ public class AlunoDAO {
         }
         return exercicios;
     }
-
-    // Outros métodos (atualizar, excluir, etc.) seriam adicionados aqui.
 }

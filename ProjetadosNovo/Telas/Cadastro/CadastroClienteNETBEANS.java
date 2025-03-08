@@ -1,33 +1,62 @@
+// No pacote correto (ex: Telas.Cadastro)
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
-import javax.xml.stream.XMLStreamReader;
+
 
 public class CadastroClienteNETBEANS extends javax.swing.JFrame {
 
     MaskFormatter mfdata;
-    private XMLStreamReader jfData; // Possivelmente não é necessário, revise o uso
+    MaskFormatter mfTelefone;  // Nova máscara para telefone
+    private AlunoDAO alunoDAO; // Instância do DAO
 
     public CadastroClienteNETBEANS() {
         try {
             mfdata = new MaskFormatter("##/##/####");
+            mfTelefone = new MaskFormatter("(##) #####-####"); // Ex: (11) 99999-9999
         } catch (ParseException ex) {
-            System.out.println("Ocorreu um erro na criação da máscara");
+            System.err.println("Erro ao criar máscara: " + ex.getMessage());
+            ex.printStackTrace();
         }
         initComponents();
-        addListenerToEnviarButton(); // Adiciona o ActionListener aqui
+        alunoDAO = new AlunoDAO(); // Inicializa o DAO
+        addListenerToEnviarButton();
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        criarTabelaAlunos();
     }
+    private void criarTabelaAlunos() {
+        String sql = "CREATE TABLE IF NOT EXISTS alunos ("
+                + "matricula INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "nome TEXT NOT NULL,"
+                + "email TEXT NOT NULL,"
+                + "numerocel TEXT,"  // Adicionei numerocel
+                + "nascimento TEXT NOT NULL," // Formato: yyyy-MM-dd
+                + "sexo TEXT,"
+                + "plano TEXT," // Mensal, Semestral, Anual
+                + "horario_cadastro TEXT" // Data e hora do cadastro
+                + ");";
+
+        try (Connection conn = ConexaoDB.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.err.println("Erro ao criar tabela: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
     private void addListenerToEnviarButton() {
         jButton1.addActionListener(new ActionListener() {
@@ -38,54 +67,54 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
         });
     }
 
-
     private void cadastrarCliente() {
-        String nome = NomeTxtField.getText();
-        String email = EmailTxtField.getText();
-        String telefone = TelefoneTxtField.getText();
-        String dataNascStr = dataNascimento.getText();
+        // 1. Coleta de Dados e Validação
+        String nome = NomeTxtField.getText().trim(); // trim() remove espaços em branco
+        String email = EmailTxtField.getText().trim();
+        String telefone = TelefoneTxtField.getText().trim();
+        String dataNascStr = dataNascimento.getText().trim();
         String sexo = MasculinojRadioButton.isSelected() ? "Masculino" : (FemininojRadioButton.isSelected() ? "Feminino" : null);
+        String plano = "Mensal"; // Defina o plano, ou use um JComboBox, etc.
+        LocalDateTime horarioCadastro = LocalDateTime.now(); //Pega data e hora atual
 
-        // Validação básica (pode ser aprimorada)
+        // Validação (exemplo - pode ser expandida)
         if (nome.isEmpty() || email.isEmpty() || telefone.isEmpty() || dataNascStr.isEmpty() || sexo == null) {
-            JOptionPane.showMessageDialog(this, "Preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        Date dataNasc = null;
+        // Validação de email (exemplo simples)
+        if (!email.contains("@") || !email.contains(".")) {
+            JOptionPane.showMessageDialog(this, "Email inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Validação e conversão da data de nascimento
+        LocalDate dataNasc = null;
         try {
-            dataNasc = sdf.parse(dataNascStr);
-        } catch (ParseException ex) {
-            JOptionPane.showMessageDialog(this, "Data de nascimento inválida!", "Erro", JOptionPane.ERROR_MESSAGE);
+            DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            dataNasc = LocalDate.parse(dataNascStr, formatter);
+            // Verifica se a data está no futuro
+            if (dataNasc.isAfter(LocalDate.now())) {
+                JOptionPane.showMessageDialog(this, "Data de nascimento no futuro!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Data de nascimento inválida! Use o formato dd/MM/aaaa.", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Conexão com o banco de dados (try-with-resources)
-        try (Connection conn = ConexaoDB.getConnection()) {
-            // Cria a tabela, se não existir
+        // 2. Criação do Objeto Aluno
+        Aluno aluno = new Aluno(nome, email, telefone, dataNasc, sexo, plano, horarioCadastro);
 
-            // Inserção dos dados (PreparedStatement para segurança)
-            String insertSQL = "INSERT INTO alunos (nome, email, numerocel, nascimento, sexo, plano) VALUES (?, ?, ?, ?, ?)";
-            try (PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
-                pstmt.setString(1, nome);
-                pstmt.setString(2, email);
-                pstmt.setString(3, telefone);
-                pstmt.setString(4, sdf.format(dataNasc)); // Formata a data para consistência
-                pstmt.setString(5, sexo);
-                pstmt.executeUpdate();
-
-                JOptionPane.showMessageDialog(this, "Cliente cadastrado com sucesso!");
-                limparCampos(); // Limpa os campos após o cadastro
-
-            } catch (SQLException ex) {
-                System.err.println("Erro ao inserir dados: " + ex.getMessage());
-                JOptionPane.showMessageDialog(this, "Erro ao cadastrar cliente: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-            }
-
-        } catch (SQLException ex) {
-            System.err.println("Erro ao conectar ao banco de dados: " + ex.getMessage());
-            JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        // 3. Inserção no Banco de Dados (usando o DAO)
+        try {
+            alunoDAO.inserirAluno(aluno);
+            JOptionPane.showMessageDialog(this, "Cliente cadastrado com sucesso!");
+            limparCampos();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao cadastrar cliente: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace(); // Imprime o stack trace para debug
         }
     }
 
@@ -95,35 +124,15 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
         EmailTxtField.setText("");
         TelefoneTxtField.setText("");
         dataNascimento.setText("");
-        buttonGroup1.clearSelection(); // Desmarca os radio buttons
+        buttonGroup1.clearSelection();
     }
 
-    // ... restante do código ... (initComponents, etc.)
-    private void MasculinojRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MasculinojRadioButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_MasculinojRadioButtonActionPerformed
-
-    private void dataNascimentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataNascimentoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_dataNascimentoActionPerformed
-
-    private void dataNascimentoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_dataNascimentoFocusLost
-        //Validação da data: Se a data for inválida, exibe uma mensagem e limpa o campo.
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        sdf.setLenient(false); // Torna a validação mais estrita
-
-        try {
-            Date date = sdf.parse(dataNascimento.getText());
-        } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Data de nascimento inválida. Use o formato dd/mm/aaaa.", "Erro", JOptionPane.ERROR_MESSAGE);
-            dataNascimento.setText(""); // Limpa o campo
-        }
-    }//GEN-LAST:event_dataNascimentoFocusLost
-
+    // ... restante do código (gerado pelo NetBeans) ...
+    private void MasculinojRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {}
+    private void dataNascimentoActionPerformed(java.awt.event.ActionEvent evt) {}
+    private void dataNascimentoFocusLost(java.awt.event.FocusEvent evt) {}
 
     public static void main(String args[]) {
-
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new CadastroClienteNETBEANS().setVisible(true);
@@ -131,11 +140,9 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
         });
     }
 
-    private void NomeTxtFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NomeTxtFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_NomeTxtFieldActionPerformed
+    private void NomeTxtFieldActionPerformed(java.awt.event.ActionEvent evt) {}
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify
     private javax.swing.JTextField EmailTxtField;
     private javax.swing.JRadioButton FemininojRadioButton;
     private javax.swing.JRadioButton MasculinojRadioButton;
@@ -149,7 +156,7 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel nomelabel;
     private javax.swing.JLabel telefonelabel;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration
 
     private void initComponents() {
 
@@ -159,7 +166,7 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
         datadeNascimentoLabel = new JLabel();
         NomeTxtField = new JTextField();
         EmailTxtField = new JTextField();
-        TelefoneTxtField = new JTextField();
+        TelefoneTxtField = new JFormattedTextField(mfTelefone); // Usando JFormattedTextField para telefone
         dataNascimento = new JFormattedTextField(mfdata);
         MasculinojRadioButton = new JRadioButton();
         FemininojRadioButton = new JRadioButton();
@@ -167,7 +174,7 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
         nomelabel = new JLabel();
         emaillabel = new JLabel();
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // Mantenha, mas DISPOSE_ON_CLOSE no construtor
         setBackground(new Color(0, 0, 0));
         setPreferredSize(new Dimension(520, 400));
 
@@ -184,10 +191,11 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
             }
         });
 
-        dataNascimento.addFocusListener(new FocusAdapter() {
+        dataNascimento.addFocusListener(new FocusAdapter() { // Adicionado FocusListener para validar a data
             public void focusLost(FocusEvent evt) {
                 dataNascimentoFocusLost(evt);
             }
+
         });
         dataNascimento.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {

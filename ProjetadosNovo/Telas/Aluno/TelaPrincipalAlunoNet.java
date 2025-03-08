@@ -1,14 +1,83 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 
 public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
 
-    /**
-     * Creates new form TelaPrincipalAlunoNet
-     */
-    public TelaPrincipalAlunoNet() {
+    private int matriculaAluno; // Variável de instância
+    private AlunoDAO alunoDAO;
+
+    public TelaPrincipalAlunoNet(int matricula) {
         initComponents();
+        this.matriculaAluno = matricula;
+        alunoDAO = new AlunoDAO();
+        criarTabelaExercicios(); // Garante que a tabela exista.
+        carregarTreinos();
+        carregarDadosAluno();
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
+    private void criarTabelaExercicios() {
+        String sql = "CREATE TABLE IF NOT EXISTS exercicios (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "matricula_aluno INTEGER NOT NULL," +
+                "nome TEXT NOT NULL," +
+                "carga INTEGER," +
+                "repeticoes INTEGER," +
+                "series INTEGER," +
+                "FOREIGN KEY (matricula_aluno) REFERENCES alunos(matricula)" +
+                ");";
+
+        try (Connection conn = ConexaoDB.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.err.println("Erro ao criar tabela exercicios: " + e.getMessage());
+            e.printStackTrace(); //  Imprime o stack trace
+        }
+    }
+
+    private void carregarDadosAluno() {
+        try {
+            Aluno aluno = alunoDAO.buscarPorMatricula(matriculaAluno);
+            if (aluno != null) {
+                lblnomealuno.setText(aluno.getNome());
+                lblmatriculanum.setText(String.valueOf(aluno.getMatricula()));
+                if (aluno.getNascimento() != null) {
+                    lbldata.setText(aluno.getNascimento().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                }
+
+                //  Lógica para determinar a situação (ex: vencimento)
+                lblvencimento.setText("15 dias para o vencimento"); //  Lógica real
+                lblsituacao.setText("Situação: Ativa"); //  Lógica real
+
+                //  Data/hora (você precisará obter isso de algum lugar)
+                lblhora.setText("14:55"); //  Obter data/hora atual ou do servidor
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar dados do aluno: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    private void carregarTreinos() {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
+
+        try {
+            List<Exercicio> exercicios = alunoDAO.buscarExerciciosPorMatricula(matriculaAluno); // Chama o DAO
+            for (Exercicio exercicio : exercicios) {
+                model.addRow(new Object[]{exercicio.getNome(), exercicio.getCarga(), exercicio.getRepeticoes(), exercicio.getSeries()});
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar treinos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -37,19 +106,19 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"Supino",  new Integer(60),  new Integer(12),  new Integer(3)},
-                {"Supino inclinado com Halteres",  new Integer(30),  new Integer(12),  new Integer(3)}
-            },
-            new String [] {
-                "Nome", "Carga(Kg)", "Repetições", "Séries"
-            }
+                new Object [][] {
+                        {"Supino", Integer.valueOf(60), Integer.valueOf(12), Integer.valueOf(3)},
+                        {"Supino inclinado com Halteres", Integer.valueOf(30), Integer.valueOf(12), Integer.valueOf(3)},
+                },
+                new String [] {
+                        "Nome", "Carga(Kg)", "Repetições", "Séries"
+                }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
+                    java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                    false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -89,62 +158,62 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(lblsituacao)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblvencimento))
-                    .addComponent(jLabel1)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(lblnomealuno, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(lblmatricula)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(lblmatriculanum)
-                            .addGap(55, 55, 55)
-                            .addComponent(lbldatamatricula)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(lbldata)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblhora))
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 860, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(20, 20, 20))
+                                .addGap(20, 20, 20)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(lblsituacao)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(lblvencimento))
+                                        .addComponent(jLabel1)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                                        .addComponent(lblnomealuno, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addGap(18, 18, 18)
+                                                        .addComponent(lblmatricula)
+                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(lblmatriculanum)
+                                                        .addGap(55, 55, 55)
+                                                        .addComponent(lbldatamatricula)
+                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(lbldata)
+                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(lblhora))
+                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 860, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(20, 20, 20))
         );
         jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblnomealuno)
-                    .addComponent(lblmatricula)
-                    .addComponent(lblmatriculanum)
-                    .addComponent(lbldatamatricula)
-                    .addComponent(lbldata)
-                    .addComponent(lblhora))
-                .addGap(28, 28, 28)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblsituacao)
-                    .addComponent(lblvencimento))
-                .addGap(18, 18, 18)
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(40, Short.MAX_VALUE))
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lblnomealuno)
+                                        .addComponent(lblmatricula)
+                                        .addComponent(lblmatriculanum)
+                                        .addComponent(lbldatamatricula)
+                                        .addComponent(lbldata)
+                                        .addComponent(lblhora))
+                                .addGap(28, 28, 28)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lblsituacao)
+                                        .addComponent(lblvencimento))
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel1)
+                                .addGap(18, 18, 18)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(40, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -177,7 +246,8 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TelaPrincipalAlunoNet().setVisible(true);
+                // Simulando um login com matrícula 1 (ajuste para um valor real)
+                new TelaPrincipalAlunoNet(1).setVisible(true);
             }
         });
     }

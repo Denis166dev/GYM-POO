@@ -1,19 +1,44 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
+import javax.swing.*;
 
-/**
- *
- * @author denis
- */
 public class DadosCliente extends javax.swing.JFrame {
 
-    /**
-     * Creates new form DadosCliente
-     */
-    public DadosCliente() {
+    private int matricula;
+    private AlunoDAO alunoDAO;
+
+    public DadosCliente(int matricula) {
         initComponents();
+        this.matricula = matricula;
+        alunoDAO = new AlunoDAO(); // Inicializa o DAO
+        carregarDadosCliente();
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Fecha só esta tela
+    }
+    private void carregarDadosCliente() {
+        try {
+            Aluno aluno = alunoDAO.buscarPorMatricula(matricula);
+            if (aluno != null) {
+                // Preenche os campos com os dados do aluno
+                lblnomecliente.setText(aluno.getNome());
+                lblemailcliente.setText(aluno.getEmail());
+                lbltelefonenum.setText(aluno.getNumerocel());
+                //Formata a data antes de setar no label
+                if (aluno.getNascimento() != null) {
+                    lbldatamatricula.setText(aluno.getNascimento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                }
+                if (aluno.getHorarioCadastro() != null) {
+                    lblhoracadastro.setText(aluno.getHorarioCadastro().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+                }
+                lblplanotipo.setText(aluno.getPlano());
+                lblsituacaotipo.setText("Ativa"); //  Lógica para determinar a situação
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Aluno não encontrado.", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar dados do cliente: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -40,6 +65,8 @@ public class DadosCliente extends javax.swing.JFrame {
         lblemail = new javax.swing.JLabel();
         lblemailcliente = new javax.swing.JLabel();
         btntreino = new javax.swing.JButton();
+        lblhoracadastro = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -77,94 +104,108 @@ public class DadosCliente extends javax.swing.JFrame {
             }
         });
 
+        lblhoracadastro.setText("jLabel1");
+
+        jLabel1.setText("Data e Hora do Cadastro");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btntreino)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(lblnome, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(lblnomecliente, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(lblplano)
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(20, 20, 20)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(btntreino)
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(lblnome, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                .addComponent(lblnomecliente, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(lblplano)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(lblplanotipo)))
+                                                .addGap(18, 18, 18)
+                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(lblemail)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(lblemailcliente, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(lbltelefone)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(lbltelefonenum)))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(lbldata)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(lbldatamatricula))
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(lblsituacao)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(lblsituacaotipo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addGap(20, 20, 20))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblplanotipo)))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(lblemail)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblemailcliente, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(lbltelefone)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lbltelefonenum)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(lbldata)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lbldatamatricula))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(lblsituacao)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblsituacaotipo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addGap(20, 20, 20))
+                                .addComponent(lblhoracadastro)
+                                .addGap(48, 48, 48))
         );
         jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblnome)
-                    .addComponent(lblnomecliente)
-                    .addComponent(lblemail)
-                    .addComponent(lblemailcliente)
-                    .addComponent(lbldata)
-                    .addComponent(lbldatamatricula))
-                .addGap(36, 36, 36)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbltelefone)
-                    .addComponent(lbltelefonenum)
-                    .addComponent(lblplano)
-                    .addComponent(lblplanotipo)
-                    .addComponent(lblsituacao)
-                    .addComponent(lblsituacaotipo))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 120, Short.MAX_VALUE)
-                .addComponent(btntreino)
-                .addGap(27, 27, 27))
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lblnome)
+                                        .addComponent(lblnomecliente)
+                                        .addComponent(lblemail)
+                                        .addComponent(lblemailcliente)
+                                        .addComponent(lbldata)
+                                        .addComponent(lbldatamatricula))
+                                .addGap(36, 36, 36)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lbltelefone)
+                                        .addComponent(lbltelefonenum)
+                                        .addComponent(lblplano)
+                                        .addComponent(lblplanotipo)
+                                        .addComponent(lblsituacao)
+                                        .addComponent(lblsituacaotipo))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lblhoracadastro)
+                                        .addComponent(jLabel1))
+                                .addGap(41, 41, 41)
+                                .addComponent(btntreino)
+                                .addGap(27, 27, 27))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 17, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 17, Short.MAX_VALUE)
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -181,7 +222,7 @@ public class DadosCliente extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -204,19 +245,23 @@ public class DadosCliente extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new DadosCliente().setVisible(true);
+                // Removido: new DadosCliente().setVisible(true);  Não se deve criar sem matrícula
+                // Para testar, você pode simular uma matrícula:
+                new DadosCliente(1).setVisible(true); // Supondo que a matrícula 1 exista no banco
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btntreino;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lbldata;
     private javax.swing.JLabel lbldatamatricula;
     private javax.swing.JLabel lblemail;
     private javax.swing.JLabel lblemailcliente;
+    private javax.swing.JLabel lblhoracadastro;
     private javax.swing.JLabel lblnome;
     private javax.swing.JLabel lblnomecliente;
     private javax.swing.JLabel lblplano;

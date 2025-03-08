@@ -1,31 +1,31 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Aluno {
-    private int matricula; // Chave estrangeira que referencia a tabela usuarios
+    private int matricula; // Chave primária, agora AUTOINCREMENT
     private String nome;
-    private String numerocel;
     private String email;
-    private String nascimento;
+    private String numerocel;
+    private LocalDate nascimento; // Usando LocalDate
     private String sexo; // "Feminino" ou "Masculino"
-    private double peso;
-    private double altura;
     private String plano; // "Mensal", "Semestral", "Anual"
-    private String horarioCadastro;
+    private LocalDateTime horarioCadastro;  //Armazena data e hora do cadastro.
 
-    public Aluno() {
-    } // Construtor vazio
 
-    public Aluno(String nome, String numerocel, String email, String nascimento, String sexo, double peso, double altura, String plano, String horarioCadastro) {
+    // Construtor vazio
+    public Aluno() {}
+
+    public Aluno(String nome, String email, String numerocel, LocalDate nascimento, String sexo, String plano, LocalDateTime horarioCadastro) {
         this.nome = nome;
-        this.numerocel = numerocel;
         this.email = email;
+        this.numerocel = numerocel;
         this.nascimento = nascimento;
         this.sexo = sexo;
-        this.peso = peso;
-        this.altura = altura;
         this.plano = plano;
         this.horarioCadastro = horarioCadastro;
     }
-
-    // Getters e setters para todos os atributos
+    // Getters e setters
     public int getMatricula() {
         return matricula;
     }
@@ -50,11 +50,19 @@ public class Aluno {
         this.email = email;
     }
 
-    public String getNascimento() {
+    public String getNumerocel() {
+        return numerocel;
+    }
+
+    public void setNumerocel(String numerocel) {
+        this.numerocel = numerocel;
+    }
+
+    public LocalDate getNascimento() {
         return nascimento;
     }
 
-    public void setNascimento(String nascimento) {
+    public void setNascimento(LocalDate nascimento) {
         this.nascimento = nascimento;
     }
 
@@ -65,23 +73,6 @@ public class Aluno {
     public void setSexo(String sexo) {
         this.sexo = sexo;
     }
-
-    public double getPeso() {
-        return peso;
-    }
-
-    public void setPeso(double peso) {
-        this.peso = peso;
-    }
-
-    public double getAltura() {
-        return altura;
-    }
-
-    public void setAltura(double altura) {
-        this.altura = altura;
-    }
-
     public String getPlano() {
         return plano;
     }
@@ -89,20 +80,11 @@ public class Aluno {
     public void setPlano(String plano) {
         this.plano = plano;
     }
-
-    public String getHorarioCadastro() {
+    public LocalDateTime getHorarioCadastro() {
         return horarioCadastro;
     }
-
-    public void setHorarioCadastro(String horarioCadastro) {
+    public void setHorarioCadastro(LocalDateTime horarioCadastro){
         this.horarioCadastro = horarioCadastro;
     }
 
-    public String getNumerocel() {
-        return numerocel;
-    }
-
-    public void setNumerocel(String numerocel) {
-        this.numerocel = numerocel;
-    }
 }

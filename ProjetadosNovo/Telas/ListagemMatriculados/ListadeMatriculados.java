@@ -1,3 +1,5 @@
+// No pacote correto (ex: Telas.ListagemMatriculados)
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -10,35 +12,36 @@ import java.util.List;
 
 public class ListadeMatriculados extends JFrame {
 
-    private JTable jTable1; // Make jTable1 an instance variable
+     // Make jTable1 an instance variable
+    private AlunoDAO alunoDAO;
 
     public ListadeMatriculados() {
+        alunoDAO = new AlunoDAO(); // Inicializa o DAO
         initComponents();
         loadStudentData();
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Importante!
     }
 
     private void loadStudentData() {
-        String sql = "SELECT nome, matricula FROM alunos";
-        List<Object[]> data = new ArrayList<>();
+        try {
+            List<Aluno> alunos = alunoDAO.listarAlunos();
+            Object[][] data = new Object[alunos.size()][2]; // Cria a matriz de dados
 
-        try (Connection conn = ConexaoDB.getConnection();  // Assuming you have a ConexaoDB class
-             PreparedStatement pstmt = conn.prepareStatement(sql)) { // Use PreparedStatement
-
-            try (ResultSet rs = pstmt.executeQuery()) { // Nested try-with-resources
-                while (rs.next()) {
-                    data.add(new Object[]{rs.getString("nome"), rs.getInt("matricula")});
-                }
+            for (int i = 0; i < alunos.size(); i++) {
+                Aluno aluno = alunos.get(i);
+                data[i][0] = aluno.getNome();      // Coluna 0: Nome
+                data[i][1] = aluno.getMatricula(); // Coluna 1: Matrícula (será o botão)
             }
+
+            jTable1.setModel(new StudentTableModel(data, new String[]{"Nome", "Matrícula"}));
+            jTable1.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer());
+            jTable1.addMouseListener(new TableMouseListener());
+
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erro ao carregar dados dos alunos: " + e.getMessage(), "Erro no Banco de Dados", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro ao carregar dados dos alunos: " + e.getMessage(),
+                    "Erro no Banco de Dados", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
-            return; // Exit on error
         }
-        // Convert List to array in one line
-        Object[][] dataArray = data.toArray(new Object[0][]);
-        jTable1.setModel(new StudentTableModel(dataArray, new String[]{"Nome", "Matrícula"}));
-        jTable1.getColumnModel().getColumn(1).setCellRenderer(new ButtonRenderer());
-        jTable1.addMouseListener(new TableMouseListener()); // Use a named inner class
     }
 
 
@@ -49,7 +52,9 @@ public class ListadeMatriculados extends JFrame {
             int col = jTable1.columnAtPoint(evt.getPoint());
             if (col == 1) {
                 Integer matricula = (Integer) jTable1.getValueAt(row, 1);
-                JOptionPane.showMessageDialog(ListadeMatriculados.this, "Botão clicado para matrícula: " + matricula);
+                // Abre a tela DadosCliente, passando a matrícula
+                DadosCliente dadosCliente = new DadosCliente(matricula);
+                dadosCliente.setVisible(true);
             }
         }
     }
@@ -79,7 +84,6 @@ public class ListadeMatriculados extends JFrame {
     }
 
 
-    // Inner class for ButtonRenderer (simplified)
     private class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -87,9 +91,9 @@ public class ListadeMatriculados extends JFrame {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setBackground(isSelected ? table.getSelectionBackground() : UIManager.getColor("Button.background"));
-            setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
-            setText(value == null ? "" : value.toString());
+            setText(value == null ? "" : value.toString()); // Define o texto do botão
+            setBackground(isSelected ? table.getSelectionBackground() : table.getBackground()); // Mantém a cor de fundo
+            setForeground(isSelected ? table.getSelectionForeground() : table.getForeground()); // Mantém a cor do texto
             return this;
         }
     }
@@ -185,6 +189,6 @@ public class ListadeMatriculados extends JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    //private javax.swing.JTable jTable1;
+    private  JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }

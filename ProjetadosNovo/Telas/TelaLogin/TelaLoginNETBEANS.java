@@ -231,32 +231,36 @@ public class TelaLoginNETBEANS extends javax.swing.JFrame {
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
     public void realizarLogin() {
-
-        String matricula = jTextField2.getText();
+        String matriculaStr = jTextField2.getText().trim(); // .trim() remove espaços
         String senha = new String(jPasswordField1.getPassword());
-        String tipo = jRadioButton2.isSelected() ? "aluno" : jRadioButton1.isSelected() ? "instrutor" : null;
+        String tipo = jRadioButton2.isSelected() ? "aluno" : (jRadioButton1.isSelected() ? "instrutor" : null);
 
         if (tipo == null) {
             JOptionPane.showMessageDialog(this, "Selecione o tipo de usuário (Aluno ou Instrutor).", "Erro", JOptionPane.ERROR_MESSAGE);
-            return; // Don't proceed with login
+            return;
         }
 
-        if (autenticarUsuario(matricula, senha, tipo)) {
+        // --- Validação da Matrícula (IMPORTANTE) ---
+        int matricula;
+        try {
+            matricula = Integer.parseInt(matriculaStr);  // Tenta converter para int
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Matrícula inválida! Use apenas números.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return; // Sai do método se a matrícula não for um número
+        }
+
+        if (autenticarUsuario(matriculaStr, senha, tipo)) { // Passa matriculaStr (String)
             JOptionPane.showMessageDialog(this, "Login realizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            this.setVisible(false);
 
-            // Close the login window
-            this.setVisible(false); // Or dispose(): this.dispose();
-
-            // Open the main menu window
             if (tipo.equals("instrutor")) {
                 MenuAcademia menuAcademia = new MenuAcademia();
                 menuAcademia.setVisible(true);
             } else {
-                TelaPrincipalAlunoNet telaALuno = new TelaPrincipalAlunoNet();
-                telaALuno.setVisible(true);
+                // --- Passa a matrícula para a TelaPrincipalAlunoNet ---
+                TelaPrincipalAlunoNet telaAluno = new TelaPrincipalAlunoNet(matricula); // CORRIGIDO!
+                telaAluno.setVisible(true);
             }
-
-
         } else {
             JOptionPane.showMessageDialog(this, "Matrícula, senha ou tipo de usuário inválidos.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
@@ -265,16 +269,21 @@ public class TelaLoginNETBEANS extends javax.swing.JFrame {
     private boolean autenticarUsuario(String matricula, String senha, String tipo) {
         String sql = "SELECT * FROM Usuarios WHERE matricula = ? AND senha = ? AND tipo = ?";
 
-        try (Connection conn = ConexaoDB.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, matricula);
+        try (Connection conn = ConexaoDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, matricula); // Usa a matrícula como String (o banco espera TEXT)
             pstmt.setString(2, senha);
             pstmt.setString(3, tipo);
+
             ResultSet rs = pstmt.executeQuery();
-            return rs.next();
+            return rs.next(); // Retorna true se encontrou um usuário, false caso contrário
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,"Erro ao realizar Login!\n Verifique se o banco de dados está conectado!","Erro",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace(); //  Imprime o stack trace para ajudar na depuração
+            return false; // Importante retornar false em caso de erro
         }
-        return false;
     }
     /**
      * @param args the command line arguments

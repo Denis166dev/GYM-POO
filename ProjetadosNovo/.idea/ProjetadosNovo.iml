@@ -8,6 +8,8 @@
       <sourceFolder url="file://$MODULE_DIR$/Telas/Menu-Academia" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Telas/TelaLogin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Telas/Treinos" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/DAO" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Models" isTestSource="false" />
     </content>
   </component>
 </module>
