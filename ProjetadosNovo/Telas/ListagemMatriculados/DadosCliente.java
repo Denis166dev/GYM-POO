@@ -24,7 +24,7 @@ public class DadosCliente extends javax.swing.JFrame {
                 lbltelefonenum.setText(aluno.getNumerocel());
                 //Formata a data antes de setar no label
                 if (aluno.getNascimento() != null) {
-                    lbldatamatricula.setText(aluno.getNascimento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    lblnascimento.setText(aluno.getNascimento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                 }
                 if (aluno.getHorarioCadastro() != null) {
                     lblhoracadastro.setText(aluno.getHorarioCadastro().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
@@ -53,7 +53,7 @@ public class DadosCliente extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         lbldata = new javax.swing.JLabel();
-        lbldatamatricula = new javax.swing.JLabel();
+        lblnascimento = new javax.swing.JLabel();
         lbltelefone = new javax.swing.JLabel();
         lbltelefonenum = new javax.swing.JLabel();
         lblplano = new javax.swing.JLabel();
@@ -73,29 +73,17 @@ public class DadosCliente extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
-        lbldata.setText("Data da Matricula:");
-
-        lbldatamatricula.setText("01/01/2025");
+        lbldata.setText("Data da Nascimento:");
 
         lbltelefone.setText("Telefone:");
 
-        lbltelefonenum.setText("00 00000 0000");
-
         lblplano.setText("Plano:");
-
-        lblplanotipo.setText("Mensal");
 
         lblsituacao.setText("Situação da Matricula:");
 
         lblnome.setText("Nome:");
 
-        lblsituacaotipo.setText("Ativa");
-
-        lblnomecliente.setText("Denis Willian");
-
         lblemail.setText("Email:");
-
-        lblemailcliente.setText("deniswillian@gmail.com");
 
         btntreino.setText("Treinos");
         btntreino.addActionListener(new java.awt.event.ActionListener() {
@@ -141,7 +129,7 @@ public class DadosCliente extends javax.swing.JFrame {
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                                 .addComponent(lbldata)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(lbldatamatricula))
+                                                                .addComponent(lblnascimento))
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                                 .addComponent(lblsituacao)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -164,7 +152,7 @@ public class DadosCliente extends javax.swing.JFrame {
                                         .addComponent(lblemail)
                                         .addComponent(lblemailcliente)
                                         .addComponent(lbldata)
-                                        .addComponent(lbldatamatricula))
+                                        .addComponent(lblnascimento))
                                 .addGap(36, 36, 36)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(lbltelefone)
@@ -258,7 +246,7 @@ public class DadosCliente extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lbldata;
-    private javax.swing.JLabel lbldatamatricula;
+    private javax.swing.JLabel lblnascimento;
     private javax.swing.JLabel lblemail;
     private javax.swing.JLabel lblemailcliente;
     private javax.swing.JLabel lblhoracadastro;
