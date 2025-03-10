@@ -1,20 +1,20 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.sql.SQLException;
+import java.util.List;
+import java.time.format.DateTimeFormatter;
 
-/**
- *
- * @author Aluno
- */
+
 public class MatriculasVencidasNet extends javax.swing.JFrame {
 
+    private AlunoDAO alunoDAO; // Adiciona o DAO
     /**
      * Creates new form MatriculasVencidasNet
      */
     public MatriculasVencidasNet() {
         initComponents();
-
+        alunoDAO = new AlunoDAO(); // Instancia o DAO.
+        carregarMatriculasVencidas(); //Chama o metodo no construtor.
         // Centraliza o conteúdo das células na tabela
         javax.swing.table.DefaultTableCellRenderer centralizado = new javax.swing.table.DefaultTableCellRenderer();
         centralizado.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -22,6 +22,32 @@ public class MatriculasVencidasNet extends javax.swing.JFrame {
         // Aplica o centralizador a todas as colunas
         for (int i = 0; i < jTable1.getColumnCount(); i++) {
             jTable1.getColumnModel().getColumn(i).setCellRenderer(centralizado);
+        }
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); //Muito Importante.
+
+    }
+    private void carregarMatriculasVencidas() {
+        try {
+            int diasAviso = 7; // Defina o número de dias de aviso (ex: 7 dias)
+            List<Aluno> alunos = alunoDAO.buscarMatriculasVencidas(diasAviso); //Chama o método do DAO
+
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.setRowCount(0); // Limpa a tabela
+
+            for (Aluno aluno : alunos) {
+                // Formata a data de nascimento para exibição
+                String dataNasc = (aluno.getNascimento() != null) ? aluno.getNascimento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "";
+                model.addRow(new Object[]{
+                        aluno.getNome(),
+                        aluno.getMatricula(),
+                        dataNasc,
+                        aluno.getPlano() // Usa o plano modificado (com "Vencido" ou "Vence em...")
+                });
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar matrículas vencidas: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace(); //  Imprime o stack trace para debug
         }
     }
 
@@ -45,20 +71,18 @@ public class MatriculasVencidasNet extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"Maria",  new Integer(123456), "20/02/2024", "vencida"},
-                {"João",  new Integer(654321), "21/03/2024", "7 dias para o vencimento"},
-                {"Ana",  new Integer(987456), "22/01/2025", "14 dias para o vencimento"}
-            },
-            new String [] {
-                "Nome", "Matricula", "Data da Matricula", "Situação"
-            }
+                new Object [][] {
+
+                },
+                new String [] {
+                        "Nome", "Matricula", "Data da Matricula", "Situação"
+                }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
+                    java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                    false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -80,29 +104,29 @@ public class MatriculasVencidasNet extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 925, Short.MAX_VALUE)
-                .addContainerGap())
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 925, Short.MAX_VALUE)
+                                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();

@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,14 +21,13 @@ public class AlunoDAO {
             pstmt.setString(1, aluno.getNome());
             pstmt.setString(2, aluno.getEmail());
             pstmt.setString(3, aluno.getNumerocel());
-            pstmt.setString(4, aluno.getNascimento().format(DateTimeFormatter.ISO_LOCAL_DATE));
+            pstmt.setString(4, aluno.getNascimento().format(DateTimeFormatter.ISO_LOCAL_DATE)); // Formata LocalDate para String (yyyy-MM-dd)
             pstmt.setString(5, aluno.getSexo());
             pstmt.setString(6, aluno.getPlano());
             pstmt.setString(7, aluno.getHorarioCadastro().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             pstmt.executeUpdate();
         }
     }
-
     public List<Aluno> listarAlunos() throws SQLException {
         List<Aluno> alunos = new ArrayList<>();
         String sql = "SELECT matricula, nome, email, numerocel, nascimento, sexo, plano, horario_cadastro FROM alunos";
@@ -42,7 +43,7 @@ public class AlunoDAO {
                 aluno.setEmail(rs.getString("email"));
                 aluno.setNumerocel(rs.getString("numerocel"));
 
-                // Leitura correta da data (já está em yyyy-MM-dd)
+                // Leitura CORRETA da data (já está em yyyy-MM-dd no banco)
                 String dataNascStr = rs.getString("nascimento");
                 if (dataNascStr != null && !dataNascStr.isEmpty()) {
                     try {
@@ -50,7 +51,6 @@ public class AlunoDAO {
                     } catch (DateTimeParseException e) {
                         System.err.println("Erro ao converter data de nascimento (listarAlunos): " + dataNascStr);
                         e.printStackTrace();
-                        // Lidar com o erro (opcional, dependendo da sua lógica)
                     }
                 }
 
@@ -58,22 +58,20 @@ public class AlunoDAO {
                 aluno.setPlano(rs.getString("plano"));
 
                 String horarioCadastroStr = rs.getString("horario_cadastro");
-                if (horarioCadastroStr != null && !horarioCadastroStr.isEmpty()) {
-                    try {
+                if(horarioCadastroStr != null && !horarioCadastroStr.isEmpty()){
+                    try{
                         aluno.setHorarioCadastro(LocalDateTime.parse(horarioCadastroStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-                    } catch (DateTimeParseException e) { // DateTimeParseException, não Exception
+                    } catch (DateTimeParseException e){
                         System.err.println("Erro ao converter horario de cadastro: " + horarioCadastroStr);
                         e.printStackTrace();
-                        // Lidar com o erro (opcional)
                     }
                 }
+
                 alunos.add(aluno);
             }
         }
         return alunos;
     }
-
-
     public Aluno buscarPorMatricula(int matricula) throws SQLException {
         String sql = "SELECT nome, email, numerocel, nascimento, sexo, plano, horario_cadastro FROM alunos WHERE matricula = ?";
         Aluno aluno = null;
@@ -99,6 +97,7 @@ public class AlunoDAO {
                         } catch (DateTimeParseException e) {
                             System.err.println("Erro ao converter data de nascimento (buscarPorMatricula): " + dataNascStr);
                             e.printStackTrace();
+
                         }
                     }
                     // --- FIM da leitura correta ---
@@ -106,9 +105,10 @@ public class AlunoDAO {
                     if (horarioCadastroStr != null && !horarioCadastroStr.isEmpty()) {
                         try {
                             aluno.setHorarioCadastro(LocalDateTime.parse(horarioCadastroStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-                        } catch (DateTimeParseException e) {
+                        } catch (DateTimeParseException e) { // DateTimeParseException
                             System.err.println("Erro ao converter horario de cadastro: " + horarioCadastroStr);
                             e.printStackTrace();
+
                         }
                     }
 
@@ -121,18 +121,17 @@ public class AlunoDAO {
         return aluno;
     }
 
-
-    public List<Exercicio> buscarExerciciosPorMatricula(int matricula) throws SQLException {
+    public List<Exercicio> buscarExerciciosPorMatricula(int matricula) throws SQLException{
         List<Exercicio> exercicios = new ArrayList<>();
         String sql = "SELECT nome, carga, repeticoes, series FROM exercicios WHERE matricula_aluno = ?";
 
-        try (Connection conn = ConexaoDB.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(Connection conn = ConexaoDB.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             pstmt.setInt(1, matricula);
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
+            try(ResultSet rs = pstmt.executeQuery()){
+                while(rs.next()){
                     Exercicio exercicio = new Exercicio();
                     exercicio.setNome(rs.getString("nome"));
                     exercicio.setCarga(rs.getInt("carga"));
@@ -141,7 +140,92 @@ public class AlunoDAO {
                     exercicios.add(exercicio);
                 }
             }
+
+
         }
         return exercicios;
+
     }
+
+    public List<Aluno> buscarMatriculasVencidas(int diasAviso) throws SQLException {
+        List<Aluno> alunosVencidos = new ArrayList<>();
+        String sql = "SELECT matricula, nome, email, numerocel, nascimento, sexo, plano, horario_cadastro FROM alunos";
+
+        try (Connection conn = ConexaoDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            LocalDate hoje = LocalDate.now();
+
+            while (rs.next()) {
+                Aluno aluno = new Aluno();
+                aluno.setMatricula(rs.getInt("matricula"));
+                aluno.setNome(rs.getString("nome"));
+                aluno.setEmail(rs.getString("email"));
+                aluno.setNumerocel(rs.getString("numerocel"));
+                String dataNascStr = rs.getString("nascimento");
+
+                if (dataNascStr != null && !dataNascStr.isEmpty()) {
+                    try {
+                        aluno.setNascimento(LocalDate.parse(dataNascStr)); // Sem formatter!
+                    } catch (DateTimeParseException e) {
+                        System.err.println("Erro ao converter data de nascimento (listarAlunos): " + dataNascStr);
+                        e.printStackTrace();
+                    }
+                }
+                aluno.setSexo(rs.getString("sexo"));
+                aluno.setPlano(rs.getString("plano"));
+                // --- Leitura e formatação do HORÁRIO DE CADASTRO ---
+                String horarioCadastroStr = rs.getString("horario_cadastro");
+                if(horarioCadastroStr != null && !horarioCadastroStr.isEmpty()){
+                    try{
+                        aluno.setHorarioCadastro(LocalDateTime.parse(horarioCadastroStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))); //CORRETO
+                    } catch (DateTimeParseException e){ //DateTimeParseException, não Exception
+                        System.err.println("Erro ao converter horario de cadastro: " + horarioCadastroStr);
+                        e.printStackTrace();
+                    }
+                }
+                // --- FIM da leitura ---
+
+                // --- Lógica de Vencimento ---
+                if (aluno.getHorarioCadastro() != null) { // Verifica se não é nulo
+                    LocalDate dataCadastro = aluno.getHorarioCadastro().toLocalDate(); //Pega a data do cadastro.
+                    LocalDate dataVencimento = null;
+
+                    // Calcular data de vencimento com base no plano
+                    if ("Mensal".equalsIgnoreCase(aluno.getPlano())) {
+                        dataVencimento = dataCadastro.plusMonths(1);
+                    } else if ("Trimestral".equalsIgnoreCase(aluno.getPlano())) {
+                        dataVencimento = dataCadastro.plusMonths(3);
+                    } else if ("Semestral".equalsIgnoreCase(aluno.getPlano())) {
+                        dataVencimento = dataCadastro.plusMonths(6);
+                    } else if ("Anual".equalsIgnoreCase(aluno.getPlano())) {
+                        dataVencimento = dataCadastro.plusYears(1);
+                    }
+
+                    if (dataVencimento != null) {
+                        //Verifica se está vencido
+                        if (hoje.isAfter(dataVencimento)) {
+                            aluno.setStatusVencimento("Vencido"); // Usa o novo atributo
+                            alunosVencidos.add(aluno);
+                        } else {
+                            long diasParaVencer = ChronoUnit.DAYS.between(hoje, dataVencimento);
+                            if (diasParaVencer <= diasAviso) {
+                                aluno.setStatusVencimento("Vence em " + diasParaVencer + " dias"); // Usa o novo atributo
+                                alunosVencidos.add(aluno);
+                            }
+                        }
+                    }
+                }else{
+                    System.err.println("Aluno com matrícula " + aluno.getMatricula() + " tem horario_cadastro NULL.");
+                }
+
+            }
+        } catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Erro ao buscar matrículas vencidas/próximas do vencimento: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        return alunosVencidos;
+    }
+
 }
