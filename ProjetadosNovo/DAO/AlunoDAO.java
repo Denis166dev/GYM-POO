@@ -120,30 +120,31 @@ public class AlunoDAO {
         return aluno;
     }
 
-    public List<Exercicio> buscarExerciciosPorMatricula(int matricula) throws SQLException{
+    public List<Exercicio> buscarExerciciosPorMatricula(int matricula) throws SQLException {
         List<Exercicio> exercicios = new ArrayList<>();
-        String sql = "SELECT nome, carga, repeticoes, series FROM exercicios WHERE matricula_aluno = ?";
+        String sql = "SELECT nome, carga, repeticoes, series, divisao_treino FROM exercicios WHERE matricula_aluno = ?";
 
-        try(Connection conn = ConexaoDB.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try (Connection conn = ConexaoDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, matricula);
 
-            try(ResultSet rs = pstmt.executeQuery()){
-                while(rs.next()){
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
                     Exercicio exercicio = new Exercicio();
                     exercicio.setNome(rs.getString("nome"));
                     exercicio.setCarga(rs.getInt("carga"));
                     exercicio.setRepeticoes(rs.getInt("repeticoes"));
                     exercicio.setSeries(rs.getInt("series"));
+                    exercicio.setDivisaoTreino(rs.getString("divisao_treino")); // NEW LINE - Retrieve and set divisao_treino
                     exercicios.add(exercicio);
                 }
-            }
 
+
+            }
+            return exercicios;
 
         }
-        return exercicios;
-
     }
 
     public List<Aluno> buscarMatriculasVencidas(int diasAviso) throws SQLException {
@@ -228,4 +229,28 @@ public class AlunoDAO {
         return alunosVencidos;
     }
 
+    public static void salvarExerciciosAluno(int matriculaAluno, List<Exercicio> exercicios) throws SQLException {
+        // First, clear existing exercises for this aluno (optional, but often desired for "re-assigning" трейноs)
+        String deleteSql = "DELETE FROM exercicios WHERE matricula_aluno = ?";
+        try (Connection conn = ConexaoDB.getConnection();
+             PreparedStatement deletePstmt = conn.prepareStatement(deleteSql)) {
+            deletePstmt.setInt(1, matriculaAluno);
+            deletePstmt.executeUpdate();
+        }
+
+        // Then, insert the new exercises
+            String insertSql = "INSERT INTO exercicios (matricula_aluno, nome, repeticoes, series, divisao_treino) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = ConexaoDB.getConnection();
+             PreparedStatement insertPstmt = conn.prepareStatement(insertSql)) {
+
+            for (Exercicio exercicio : exercicios) {
+                insertPstmt.setInt(1, matriculaAluno);
+                insertPstmt.setString(2, exercicio.getNome());
+                insertPstmt.setInt(3, exercicio.getRepeticoes());
+                insertPstmt.setInt(4, exercicio.getSeries());
+                insertPstmt.setString(5, exercicio.getDivisaoTreino()); // NEW LINE - Set divisao_treino parameter
+                insertPstmt.executeUpdate(); // Execute insert for each exercise
+            }
+        }
+    }
 }
