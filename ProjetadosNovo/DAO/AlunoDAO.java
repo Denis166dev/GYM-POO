@@ -237,15 +237,7 @@ public class AlunoDAO {
     }
 
     public static void salvarExerciciosAluno(int matriculaAluno, List<Exercicio> exercicios) throws SQLException {
-        // First, clear existing exercises for this aluno (optional, but often desired for "re-assigning" трейноs)
-        String deleteSql = "DELETE FROM exercicios WHERE matricula_aluno = ?";
-        try (Connection conn = ConexaoDB.getConnection();
-             PreparedStatement deletePstmt = conn.prepareStatement(deleteSql)) {
-            deletePstmt.setInt(1, matriculaAluno);
-            deletePstmt.executeUpdate();
-        }
 
-        // Then, insert the new exercises
             String insertSql = "INSERT INTO exercicios (matricula_aluno, nome, repeticoes, series, divisao_treino) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = ConexaoDB.getConnection();
              PreparedStatement insertPstmt = conn.prepareStatement(insertSql)) {
