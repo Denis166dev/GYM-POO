@@ -47,19 +47,18 @@ public class AlunoDAO {
                 String dataNascStr = rs.getString("nascimento");
                 if (dataNascStr != null && !dataNascStr.isEmpty()) {
                     try {
-                        aluno.setNascimento(LocalDate.parse(dataNascStr)); // Sem formatter!
+                        // Try parsing without explicit formatter
+                        aluno.setNascimento(LocalDate.parse(dataNascStr));
                     } catch (DateTimeParseException e) {
                         System.err.println("Erro ao converter data de nascimento (listarAlunos): " + dataNascStr);
                         e.printStackTrace();
                     }
                 }
 
-                aluno.setSexo(rs.getString("sexo"));
-                aluno.setPlano(rs.getString("plano"));
-
                 String horarioCadastroStr = rs.getString("horario_cadastro");
                 if(horarioCadastroStr != null && !horarioCadastroStr.isEmpty()){
                     try{
+                        // Keep the formatter for LocalDateTime parsing (yyyy-MM-dd HH:mm:ss)
                         aluno.setHorarioCadastro(LocalDateTime.parse(horarioCadastroStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                     } catch (DateTimeParseException e){
                         System.err.println("Erro ao converter horario de cadastro: " + horarioCadastroStr);
@@ -93,22 +92,22 @@ public class AlunoDAO {
                     String dataNascStr = rs.getString("nascimento");
                     if (dataNascStr != null && !dataNascStr.isEmpty()) {
                         try {
-                            aluno.setNascimento(LocalDate.parse(dataNascStr)); // SEM FORMATTER!
+                            // Try parsing without explicit formatter
+                            aluno.setNascimento(LocalDate.parse(dataNascStr));
                         } catch (DateTimeParseException e) {
                             System.err.println("Erro ao converter data de nascimento (buscarPorMatricula): " + dataNascStr);
                             e.printStackTrace();
-
                         }
                     }
                     // --- FIM da leitura correta ---
                     String horarioCadastroStr = rs.getString("horario_cadastro");
                     if (horarioCadastroStr != null && !horarioCadastroStr.isEmpty()) {
                         try {
+                            // Keep the formatter for LocalDateTime parsing (yyyy-MM-dd HH:mm:ss)
                             aluno.setHorarioCadastro(LocalDateTime.parse(horarioCadastroStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                         } catch (DateTimeParseException e) { // DateTimeParseException
                             System.err.println("Erro ao converter horario de cadastro: " + horarioCadastroStr);
                             e.printStackTrace();
-
                         }
                     }
 
@@ -164,28 +163,29 @@ public class AlunoDAO {
                 aluno.setEmail(rs.getString("email"));
                 aluno.setNumerocel(rs.getString("numerocel"));
                 String dataNascStr = rs.getString("nascimento");
+                aluno.setSexo(rs.getString("sexo"));
+                aluno.setPlano(rs.getString("plano"));
 
                 if (dataNascStr != null && !dataNascStr.isEmpty()) {
                     try {
-                        aluno.setNascimento(LocalDate.parse(dataNascStr)); // Sem formatter!
+                        // Try parsing without explicit formatter
+                        aluno.setNascimento(LocalDate.parse(dataNascStr));
                     } catch (DateTimeParseException e) {
                         System.err.println("Erro ao converter data de nascimento (listarAlunos): " + dataNascStr);
                         e.printStackTrace();
                     }
                 }
-                aluno.setSexo(rs.getString("sexo"));
-                aluno.setPlano(rs.getString("plano"));
                 // --- Leitura e formatação do HORÁRIO DE CADASTRO ---
                 String horarioCadastroStr = rs.getString("horario_cadastro");
                 if(horarioCadastroStr != null && !horarioCadastroStr.isEmpty()){
                     try{
+                        // Keep the formatter for LocalDateTime parsing (yyyy-MM-dd HH:mm:ss)
                         aluno.setHorarioCadastro(LocalDateTime.parse(horarioCadastroStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))); //CORRETO
                     } catch (DateTimeParseException e){ //DateTimeParseException, não Exception
                         System.err.println("Erro ao converter horario de cadastro: " + horarioCadastroStr);
                         e.printStackTrace();
                     }
                 }
-                // --- FIM da leitura ---
 
                 // --- Lógica de Vencimento ---
                 if (aluno.getHorarioCadastro() != null) { // Verifica se não é nulo
@@ -206,12 +206,12 @@ public class AlunoDAO {
                     if (dataVencimento != null) {
                         //Verifica se está vencido
                         if (hoje.isAfter(dataVencimento)) {
-                            aluno.setStatusVencimento("Vencido"); // Usa o novo atributo
+                            aluno.setStatusVencimento("Vencido"); // Setting status here
                             alunosVencidos.add(aluno);
                         } else {
                             long diasParaVencer = ChronoUnit.DAYS.between(hoje, dataVencimento);
                             if (diasParaVencer <= diasAviso) {
-                                aluno.setStatusVencimento("Vence em " + diasParaVencer + " dias"); // Usa o novo atributo
+                                aluno.setStatusVencimento("Vence em " + diasParaVencer + " dias"); // Setting status here
                                 alunosVencidos.add(aluno);
                             }
                         }

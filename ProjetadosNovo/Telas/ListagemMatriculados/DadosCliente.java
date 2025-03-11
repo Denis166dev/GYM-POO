@@ -88,7 +88,8 @@ public class DadosCliente extends javax.swing.JFrame {
         btntreino.setText("Treinos");
         btntreino.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btntreinoActionPerformed(evt);
+                AtribuirTreino atribuirTreinoTela = new AtribuirTreino(matricula); // Open AtribuirTreino, passing matricula
+                atribuirTreinoTela.setVisible(true);
             }
         });
 

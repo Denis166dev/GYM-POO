@@ -104,7 +104,9 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
         }
 
 
-        String dataNascFormatada = dataNasc.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        DateTimeFormatter dbFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String dataNascFormatada = dataNasc.format(dbFormatter);
+
         Aluno aluno = new Aluno(nome, email, telefone, dataNasc, sexo, plano, horarioCadastro);
         try {
             alunoDAO.inserirAluno(aluno);
