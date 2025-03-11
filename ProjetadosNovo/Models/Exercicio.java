@@ -5,18 +5,27 @@ public class Exercicio {
     private int carga;
     private int repeticoes;
     private int series;
+    private String divisaoTreino;
 
     // Construtores
     public Exercicio() {}
 
-    public Exercicio(String nome, int carga, int repeticoes, int series) {
+    public Exercicio(String nome, int carga, int repeticoes, int series, String divisaoTreino) {
         this.nome = nome;
         this.carga = carga;
         this.repeticoes = repeticoes;
         this.series = series;
+        this.divisaoTreino = divisaoTreino;
     }
 
     // Getters e setters
+    public String getDivisaoTreino() {
+        return divisaoTreino;
+    }
+    public void setDivisaoTreino(String divisaoTreino) {
+        this.divisaoTreino = divisaoTreino;
+    }
+
     public String getNome() {
         return nome;
     }

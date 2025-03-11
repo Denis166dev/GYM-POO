@@ -40,8 +40,8 @@ public class MatriculasVencidasNet extends javax.swing.JFrame {
                 model.addRow(new Object[]{
                         aluno.getNome(),
                         aluno.getMatricula(),
-                        dataNasc,
-                        aluno.getPlano() // Usa o plano modificado (com "Vencido" ou "Vence em...")
+                        (aluno.getHorarioCadastro() != null) ? aluno.getHorarioCadastro().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) : "", // Data da Matricula (horario_cadastro)
+                        aluno.getStatusVencimento() // CORRECTED - Showing vencimento status
                 });
             }
 

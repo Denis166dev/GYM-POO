@@ -47,6 +47,7 @@ public class ListadeMatriculados extends JFrame {
         }
     }
 
+
     private class TableMouseListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent evt) {
@@ -54,12 +55,14 @@ public class ListadeMatriculados extends JFrame {
             int col = jTable1.columnAtPoint(evt.getPoint());
             if (col == 1) {
                 Integer matricula = (Integer) jTable1.getValueAt(row, 1);
-                TelaPrincipalAlunoNet telaAluno = new TelaPrincipalAlunoNet(matricula);
-                telaAluno.setVisible(true);
+                // Opens TelaPrincipalAlunoNet currently - need to change this
+                DadosCliente dadosClienteTela = new DadosCliente(matricula);
+                dadosClienteTela.setVisible(true);
             }
         }
     }
 
+    // Inner class for TableModel (simplified)
     private class StudentTableModel extends AbstractTableModel {
         private final Object[][] data;
         private final String[] columnNames;
@@ -80,9 +83,9 @@ public class ListadeMatriculados extends JFrame {
         @Override
         public Class<?> getColumnClass(int columnIndex) {
             if (columnIndex == 1) {
-                return Integer.class;
+                return Integer.class; // A coluna da matrícula é inteira
             }
-            return String.class;
+            return String.class; // As outras colunas são String
         }
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) { return false; }
@@ -96,12 +99,13 @@ public class ListadeMatriculados extends JFrame {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText(value == null ? "" : value.toString());
-            setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
-            setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
+            setText(value == null ? "" : value.toString()); // Define o texto do botão
+            setBackground(isSelected ? table.getSelectionBackground() : table.getBackground()); // Mantém a cor de fundo
+            setForeground(isSelected ? table.getSelectionForeground() : table.getForeground()); // Mantém a cor do texto
             return this;
         }
     }
+
     // Método initComponents() CORRIGIDO (gerado pelo NetBeans, mas com a correção)
     private void initComponents() {
         jPanel1 = new javax.swing.JPanel();
@@ -117,8 +121,7 @@ public class ListadeMatriculados extends JFrame {
                 new String [] {  //Aqui define os nomes das colunas
                         "Nome", "Matricula", "Data de Nascimento", "Data e Hora Cadastro"
                 }
-        ) {
-            //Aqui são definidos os tipos de dados das colunas
+        ) {  //Aqui são definidos os tipos de dados das colunas
             Class[] types = new Class [] {
                     java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
             };
@@ -177,7 +180,8 @@ public class ListadeMatriculados extends JFrame {
         );
 
         pack();
-    }
+    }// </editor-fold>
+
 
 
     public static void main(String args[]) {
@@ -202,6 +206,5 @@ public class ListadeMatriculados extends JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }

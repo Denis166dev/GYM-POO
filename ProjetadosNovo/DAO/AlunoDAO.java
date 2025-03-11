@@ -47,19 +47,18 @@ public class AlunoDAO {
                 String dataNascStr = rs.getString("nascimento");
                 if (dataNascStr != null && !dataNascStr.isEmpty()) {
                     try {
-                        aluno.setNascimento(LocalDate.parse(dataNascStr)); // Sem formatter!
+                        // Try parsing without explicit formatter
+                        aluno.setNascimento(LocalDate.parse(dataNascStr));
                     } catch (DateTimeParseException e) {
                         System.err.println("Erro ao converter data de nascimento (listarAlunos): " + dataNascStr);
                         e.printStackTrace();
                     }
                 }
 
-                aluno.setSexo(rs.getString("sexo"));
-                aluno.setPlano(rs.getString("plano"));
-
                 String horarioCadastroStr = rs.getString("horario_cadastro");
                 if(horarioCadastroStr != null && !horarioCadastroStr.isEmpty()){
                     try{
+                        // Keep the formatter for LocalDateTime parsing (yyyy-MM-dd HH:mm:ss)
                         aluno.setHorarioCadastro(LocalDateTime.parse(horarioCadastroStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                     } catch (DateTimeParseException e){
                         System.err.println("Erro ao converter horario de cadastro: " + horarioCadastroStr);
@@ -93,22 +92,22 @@ public class AlunoDAO {
                     String dataNascStr = rs.getString("nascimento");
                     if (dataNascStr != null && !dataNascStr.isEmpty()) {
                         try {
-                            aluno.setNascimento(LocalDate.parse(dataNascStr)); // SEM FORMATTER!
+                            // Try parsing without explicit formatter
+                            aluno.setNascimento(LocalDate.parse(dataNascStr));
                         } catch (DateTimeParseException e) {
                             System.err.println("Erro ao converter data de nascimento (buscarPorMatricula): " + dataNascStr);
                             e.printStackTrace();
-
                         }
                     }
                     // --- FIM da leitura correta ---
                     String horarioCadastroStr = rs.getString("horario_cadastro");
                     if (horarioCadastroStr != null && !horarioCadastroStr.isEmpty()) {
                         try {
+                            // Keep the formatter for LocalDateTime parsing (yyyy-MM-dd HH:mm:ss)
                             aluno.setHorarioCadastro(LocalDateTime.parse(horarioCadastroStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                         } catch (DateTimeParseException e) { // DateTimeParseException
                             System.err.println("Erro ao converter horario de cadastro: " + horarioCadastroStr);
                             e.printStackTrace();
-
                         }
                     }
 
@@ -121,30 +120,31 @@ public class AlunoDAO {
         return aluno;
     }
 
-    public List<Exercicio> buscarExerciciosPorMatricula(int matricula) throws SQLException{
+    public List<Exercicio> buscarExerciciosPorMatricula(int matricula) throws SQLException {
         List<Exercicio> exercicios = new ArrayList<>();
-        String sql = "SELECT nome, carga, repeticoes, series FROM exercicios WHERE matricula_aluno = ?";
+        String sql = "SELECT nome, carga, repeticoes, series, divisao_treino FROM exercicios WHERE matricula_aluno = ?";
 
-        try(Connection conn = ConexaoDB.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try (Connection conn = ConexaoDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, matricula);
 
-            try(ResultSet rs = pstmt.executeQuery()){
-                while(rs.next()){
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
                     Exercicio exercicio = new Exercicio();
                     exercicio.setNome(rs.getString("nome"));
                     exercicio.setCarga(rs.getInt("carga"));
                     exercicio.setRepeticoes(rs.getInt("repeticoes"));
                     exercicio.setSeries(rs.getInt("series"));
+                    exercicio.setDivisaoTreino(rs.getString("divisao_treino")); // NEW LINE - Retrieve and set divisao_treino
                     exercicios.add(exercicio);
                 }
-            }
 
+
+            }
+            return exercicios;
 
         }
-        return exercicios;
-
     }
 
     public List<Aluno> buscarMatriculasVencidas(int diasAviso) throws SQLException {
@@ -164,28 +164,29 @@ public class AlunoDAO {
                 aluno.setEmail(rs.getString("email"));
                 aluno.setNumerocel(rs.getString("numerocel"));
                 String dataNascStr = rs.getString("nascimento");
+                aluno.setSexo(rs.getString("sexo"));
+                aluno.setPlano(rs.getString("plano"));
 
                 if (dataNascStr != null && !dataNascStr.isEmpty()) {
                     try {
-                        aluno.setNascimento(LocalDate.parse(dataNascStr)); // Sem formatter!
+                        // Try parsing without explicit formatter
+                        aluno.setNascimento(LocalDate.parse(dataNascStr));
                     } catch (DateTimeParseException e) {
                         System.err.println("Erro ao converter data de nascimento (listarAlunos): " + dataNascStr);
                         e.printStackTrace();
                     }
                 }
-                aluno.setSexo(rs.getString("sexo"));
-                aluno.setPlano(rs.getString("plano"));
                 // --- Leitura e formatação do HORÁRIO DE CADASTRO ---
                 String horarioCadastroStr = rs.getString("horario_cadastro");
                 if(horarioCadastroStr != null && !horarioCadastroStr.isEmpty()){
                     try{
+                        // Keep the formatter for LocalDateTime parsing (yyyy-MM-dd HH:mm:ss)
                         aluno.setHorarioCadastro(LocalDateTime.parse(horarioCadastroStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))); //CORRETO
                     } catch (DateTimeParseException e){ //DateTimeParseException, não Exception
                         System.err.println("Erro ao converter horario de cadastro: " + horarioCadastroStr);
                         e.printStackTrace();
                     }
                 }
-                // --- FIM da leitura ---
 
                 // --- Lógica de Vencimento ---
                 if (aluno.getHorarioCadastro() != null) { // Verifica se não é nulo
@@ -206,12 +207,12 @@ public class AlunoDAO {
                     if (dataVencimento != null) {
                         //Verifica se está vencido
                         if (hoje.isAfter(dataVencimento)) {
-                            aluno.setStatusVencimento("Vencido"); // Usa o novo atributo
+                            aluno.setStatusVencimento("Vencido"); // Setting status here
                             alunosVencidos.add(aluno);
                         } else {
                             long diasParaVencer = ChronoUnit.DAYS.between(hoje, dataVencimento);
                             if (diasParaVencer <= diasAviso) {
-                                aluno.setStatusVencimento("Vence em " + diasParaVencer + " dias"); // Usa o novo atributo
+                                aluno.setStatusVencimento("Vence em " + diasParaVencer + " dias"); // Setting status here
                                 alunosVencidos.add(aluno);
                             }
                         }
@@ -228,4 +229,28 @@ public class AlunoDAO {
         return alunosVencidos;
     }
 
+    public static void salvarExerciciosAluno(int matriculaAluno, List<Exercicio> exercicios) throws SQLException {
+        // First, clear existing exercises for this aluno (optional, but often desired for "re-assigning" трейноs)
+        String deleteSql = "DELETE FROM exercicios WHERE matricula_aluno = ?";
+        try (Connection conn = ConexaoDB.getConnection();
+             PreparedStatement deletePstmt = conn.prepareStatement(deleteSql)) {
+            deletePstmt.setInt(1, matriculaAluno);
+            deletePstmt.executeUpdate();
+        }
+
+        // Then, insert the new exercises
+            String insertSql = "INSERT INTO exercicios (matricula_aluno, nome, repeticoes, series, divisao_treino) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = ConexaoDB.getConnection();
+             PreparedStatement insertPstmt = conn.prepareStatement(insertSql)) {
+
+            for (Exercicio exercicio : exercicios) {
+                insertPstmt.setInt(1, matriculaAluno);
+                insertPstmt.setString(2, exercicio.getNome());
+                insertPstmt.setInt(3, exercicio.getRepeticoes());
+                insertPstmt.setInt(4, exercicio.getSeries());
+                insertPstmt.setString(5, exercicio.getDivisaoTreino()); // NEW LINE - Set divisao_treino parameter
+                insertPstmt.executeUpdate(); // Execute insert for each exercise
+            }
+        }
+    }
 }
