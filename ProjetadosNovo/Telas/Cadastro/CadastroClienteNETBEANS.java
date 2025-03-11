@@ -19,6 +19,7 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
     MaskFormatter mfdata;
     MaskFormatter mfTelefone;
     private AlunoDAO alunoDAO;
+    private UsuarioDAO usuarioDAO = new UsuarioDAO();
     private JComboBox<String> planoComboBox; //  JComboBox para os planos
 
     public CadastroClienteNETBEANS() {
@@ -68,20 +69,19 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
     }
 
     private void cadastrarCliente() {
+        jButton1.setEnabled(false); // Disable button at the start
+
         String nome = NomeTxtField.getText().trim();
         String email = EmailTxtField.getText().trim();
         String telefone = TelefoneTxtField.getText().trim();
         String dataNascStr = dataNascimento.getText().trim();
         String sexo = MasculinojRadioButton.isSelected() ? "Masculino" : (FemininojRadioButton.isSelected() ? "Feminino" : null);
-
-        // --- Obter o plano selecionado do JComboBox ---
         String plano = (String) planoComboBox.getSelectedItem();
-
-
         LocalDateTime horarioCadastro = LocalDateTime.now();
 
         if (nome.isEmpty() || email.isEmpty() || telefone.isEmpty() || dataNascStr.isEmpty() || sexo == null || plano == null) {
             JOptionPane.showMessageDialog(this, "Preencha todos os campos obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
+            jButton1.setEnabled(true); // Re-enable button in case of error
             return;
         }
 
@@ -100,6 +100,7 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
             }
         } catch (DateTimeParseException e) {
             JOptionPane.showMessageDialog(this, "Data de nascimento inválida! Use o formato dd/MM/aaaa.", "Erro", JOptionPane.ERROR_MESSAGE);
+            jButton1.setEnabled(true);
             return;
         }
 
@@ -109,12 +110,21 @@ public class CadastroClienteNETBEANS extends javax.swing.JFrame {
 
         Aluno aluno = new Aluno(nome, email, telefone, dataNasc, sexo, plano, horarioCadastro);
         try {
-            alunoDAO.inserirAluno(aluno);
+            int generatedMatricula = alunoDAO.inserirAluno(aluno);
+
+            Usuario usuario = new Usuario();
+            usuario.setMatricula(generatedMatricula); // Set the CORRECT matricula
+            usuario.setSenha("senha_padrao");
+            usuario.setTipo("aluno");
+            usuarioDAO.inserirUsuario(usuario);
+
             JOptionPane.showMessageDialog(this, "Cliente cadastrado com sucesso!");
             limparCampos();
+            jButton1.setEnabled(true);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erro ao cadastrar cliente: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
+            jButton1.setEnabled(true);
         }
     }
 

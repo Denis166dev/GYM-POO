@@ -1,8 +1,5 @@
 import javax.swing.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,21 +10,31 @@ import java.util.List;
 
 public class AlunoDAO {
 
-    public void inserirAluno(Aluno aluno) throws SQLException {
+
+    public int inserirAluno(Aluno aluno) throws SQLException { // Change return type to int (matricula)
         String sql = "INSERT INTO alunos (nome, email, numerocel, nascimento, sexo, plano, horario_cadastro) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexaoDB.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) { // Important: Add RETURN_GENERATED_KEYS
 
             pstmt.setString(1, aluno.getNome());
             pstmt.setString(2, aluno.getEmail());
             pstmt.setString(3, aluno.getNumerocel());
-            pstmt.setString(4, aluno.getNascimento().format(DateTimeFormatter.ISO_LOCAL_DATE)); // Formata LocalDate para String (yyyy-MM-dd)
+            pstmt.setString(4, aluno.getNascimento().format(DateTimeFormatter.ISO_LOCAL_DATE));
             pstmt.setString(5, aluno.getSexo());
             pstmt.setString(6, aluno.getPlano());
             pstmt.setString(7, aluno.getHorarioCadastro().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             pstmt.executeUpdate();
+
+            ResultSet generatedKeys = pstmt.getGeneratedKeys(); // Get generated keys
+
+            if (generatedKeys.next()) {
+                return generatedKeys.getInt(1); // Return the generated matricula (assuming it's the first column)
+            } else {
+                throw new SQLException("Falha ao obter a matrícula, nenhum ID gerado.");
+            }
         }
     }
+
     public List<Aluno> listarAlunos() throws SQLException {
         List<Aluno> alunos = new ArrayList<>();
         String sql = "SELECT matricula, nome, email, numerocel, nascimento, sexo, plano, horario_cadastro FROM alunos";
@@ -252,5 +259,28 @@ public class AlunoDAO {
                 insertPstmt.executeUpdate(); // Execute insert for each exercise
             }
         }
+    }
+
+    public List<Exercicio> buscarExerciciosPorMatriculaDivisao(int matriculaAluno, String divisaoTreino) throws SQLException{
+        List<Exercicio> exercicios = new ArrayList<>();
+        String sql = "SELECT nome, carga, repeticoes, series, divisao_treino FROM exercicios WHERE matricula_aluno = ? AND divisao_treino = ?";try(Connection conn = ConexaoDB.getConnection();
+                                                                                                                                                   PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, matriculaAluno);
+            pstmt.setString(2, divisaoTreino); // Set divisaoTreino parameter
+
+            try(ResultSet rs = pstmt.executeQuery()){
+                while(rs.next()){
+                    Exercicio exercicio = new Exercicio();
+                    exercicio.setNome(rs.getString("nome"));
+                    exercicio.setCarga(rs.getInt("carga"));
+                    exercicio.setRepeticoes(rs.getInt("repeticoes"));
+                    exercicio.setSeries(rs.getInt("series"));
+                    exercicio.setDivisaoTreino(rs.getString("divisao_treino")); // Retrieve divisao_treino
+                    exercicios.add(exercicio);
+                }
+            }
+        }
+        return exercicios;
     }
 }

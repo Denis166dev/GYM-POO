@@ -1,42 +1,36 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
 
-    private int matriculaAluno; // Variável de instância
+    private int matriculaAluno;
     private AlunoDAO alunoDAO;
+    public javax.swing.JComboBox<String> tipoTreinoJComboBox;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JLabel lbldata;
+    private javax.swing.JLabel lbldatamatricula;
+    private javax.swing.JLabel lblhora;
+    private javax.swing.JLabel lblmatricula;
+    private javax.swing.JLabel lblmatriculanum;
+    private javax.swing.JLabel lblnomealuno;
+    private javax.swing.JLabel lblsituacao;
+    private javax.swing.JLabel lblvencimento;
 
+    /**
+     * Creates new form TelaPrincipalAlunoNet
+     */
     public TelaPrincipalAlunoNet(int matricula) {
         initComponents();
         this.matriculaAluno = matricula;
         alunoDAO = new AlunoDAO();
-        criarTabelaExercicios(); // Garante que a tabela exista.
-        carregarTreinos();
         carregarDadosAluno();
+        carregarTreinos("A"); // Load treino "A" initially
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    }
-    private void criarTabelaExercicios() {
-        String sql = "CREATE TABLE IF NOT EXISTS exercicios (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "matricula_aluno INTEGER NOT NULL," +
-                "nome TEXT NOT NULL," +
-                "carga INTEGER," +
-                "repeticoes INTEGER," +
-                "series INTEGER," +
-                "FOREIGN KEY (matricula_aluno) REFERENCES alunos(matricula)" +
-                ");";
-
-        try (Connection conn = ConexaoDB.getConnection();
-             Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
-        } catch (SQLException e) {
-            System.err.println("Erro ao criar tabela exercicios: " + e.getMessage());
-            e.printStackTrace(); //  Imprime o stack trace
-        }
     }
 
     private void carregarDadosAluno() {
@@ -49,12 +43,13 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
                     lbldata.setText(aluno.getNascimento().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                 }
 
-                //  Lógica para determinar a situação (ex: vencimento)
-                lblvencimento.setText("15 dias para o vencimento"); //  Lógica real
-                lblsituacao.setText("Situação: Ativa"); //  Lógica real
+                // Lógica para determinar a situação (ex: vencimento) - Replace with your actual logic if needed
+                lblvencimento.setText("15 dias para o vencimento"); // Placeholder logic
+                lblsituacao.setText("Situação: Ativa"); // Placeholder logic
 
-                //  Data/hora (você precisará obter isso de algum lugar)
-                lblhora.setText("14:55"); //  Obter data/hora atual ou do servidor
+                // Data/hora (você precisará obter isso de algum lugar) - Replace with your actual logic if needed
+                lblhora.setText("14:55"); // Placeholder logic
+
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar dados do aluno: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -62,12 +57,12 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
         }
     }
 
-    private void carregarTreinos() {
+    private void carregarTreinos(String divisaoTreino) {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
 
         try {
-            List<Exercicio> exercicios = alunoDAO.buscarExerciciosPorMatricula(matriculaAluno); // Chama o DAO
+            List<Exercicio> exercicios = alunoDAO.buscarExerciciosPorMatriculaDivisao(matriculaAluno, divisaoTreino);
             for (Exercicio exercicio : exercicios) {
                 model.addRow(new Object[]{exercicio.getNome(), exercicio.getCarga(), exercicio.getRepeticoes(), exercicio.getSeries()});
             }
@@ -75,9 +70,8 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Erro ao carregar treinos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
+        jLabel1.setText("Treinos do Dia (Treino " + divisaoTreino + ")");
     }
-
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -100,6 +94,7 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
         lbldatamatricula = new javax.swing.JLabel();
         lbldata = new javax.swing.JLabel();
         lblhora = new javax.swing.JLabel();
+        tipoTreinoJComboBox = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -107,8 +102,10 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object [][] {
-                        {"Supino", Integer.valueOf(60), Integer.valueOf(12), Integer.valueOf(3)},
-                        {"Supino inclinado com Halteres", Integer.valueOf(30), Integer.valueOf(12), Integer.valueOf(3)},
+                        {null, null, null, null},
+                        {null, null, null, null},
+                        {null, null, null, null},
+                        {null, null, null, null}
                 },
                 new String [] {
                         "Nome", "Carga(Kg)", "Repetições", "Séries"
@@ -155,6 +152,13 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
 
         lblhora.setText("14:55");
 
+        tipoTreinoJComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A", "B", "C", "D", "E", "F" }));
+        tipoTreinoJComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tipoTreinoJComboBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -180,7 +184,8 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
                                                         .addComponent(lbldata)
                                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                         .addComponent(lblhora))
-                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 860, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 860, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(tipoTreinoJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(20, 20, 20))
         );
         jPanel1Layout.setVerticalGroup(
@@ -198,7 +203,9 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(lblsituacao)
                                         .addComponent(lblvencimento))
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tipoTreinoJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(11, 11, 11)
                                 .addComponent(jLabel1)
                                 .addGap(18, 18, 18)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -218,6 +225,11 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void tipoTreinoJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
+        String selectedTreinoDay = (String) tipoTreinoJComboBox.getSelectedItem();
+        carregarTreinos(selectedTreinoDay);
+    }
 
     /**
      * @param args the command line arguments
@@ -246,24 +258,9 @@ public class TelaPrincipalAlunoNet extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                // Simulando um login com matrícula 1 (ajuste para um valor real)
                 new TelaPrincipalAlunoNet(1).setVisible(true);
             }
         });
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JLabel lbldata;
-    private javax.swing.JLabel lbldatamatricula;
-    private javax.swing.JLabel lblhora;
-    private javax.swing.JLabel lblmatricula;
-    private javax.swing.JLabel lblmatriculanum;
-    private javax.swing.JLabel lblnomealuno;
-    private javax.swing.JLabel lblsituacao;
-    private javax.swing.JLabel lblvencimento;
-    // End of variables declaration//GEN-END:variables
 }
