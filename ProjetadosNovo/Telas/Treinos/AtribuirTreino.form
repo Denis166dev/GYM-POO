@@ -73,7 +73,7 @@
                   </Group>
                   <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
                   <Component id="jScrollPane1" min="-2" pref="169" max="-2" attributes="0"/>
-                  <EmptySpace pref="31" max="32767" attributes="0"/>
+                  <EmptySpace pref="29" max="32767" attributes="0"/>
                   <Component id="btnatribuir" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
               </Group>
@@ -165,6 +165,9 @@
         </Container>
         <Component class="javax.swing.JButton" name="btnatribuir">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Calibri" size="14" style="1"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Atribuir"/>
           </Properties>
           <Events>

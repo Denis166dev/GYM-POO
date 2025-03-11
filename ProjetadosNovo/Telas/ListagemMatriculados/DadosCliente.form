@@ -47,10 +47,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace min="0" pref="17" max="32767" attributes="0"/>
-                  <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-              </Group>
+              <Component id="jPanel2" alignment="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -71,15 +68,15 @@
                           <Component id="btntreino" min="-2" max="-2" attributes="0"/>
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lblnome" min="-2" pref="40" max="-2" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <Component id="lblplano" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="lblplanotipo" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Component id="lblnome" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="lblnomecliente" min="-2" pref="151" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lblplano" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="lblplanotipo" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -135,7 +132,7 @@
                           <Component id="lblsituacao" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lblsituacaotipo" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="120" max="32767" attributes="0"/>
+                      <EmptySpace pref="137" max="32767" attributes="0"/>
                       <Component id="btntreino" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                   </Group>
@@ -145,66 +142,105 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="lbldata">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="18" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Data da Matricula:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lbldatamatricula">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="14" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="01/01/2025"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lbltelefone">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="18" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Telefone:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lbltelefonenum">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="14" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="00 00000 0000"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblplano">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="18" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Plano:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblplanotipo">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="14" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Mensal"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblsituacao">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="18" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Situa&#xe7;&#xe3;o da Matricula:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblnome">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="18" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Nome:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblsituacaotipo">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="14" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Ativa"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblnomecliente">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="14" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Denis Willian"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblemail">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="18" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Email:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblemailcliente">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="14" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="deniswillian@gmail.com"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="btntreino">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Calibri" size="12" style="1"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Treinos"/>
               </Properties>
               <Events>
